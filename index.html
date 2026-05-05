@@ -1,0 +1,3577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Transparent Rejection</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+
+  /* ─── Reset ─── */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ─── Design tokens ─── */
+  :root {
+    --bg-light:    #f5f4f0;
+    --bg-dark:     #0f0f0f;
+    --surface:     #161616;
+    --border:      #2a2a2a;
+    --border-light: #e0e0d8;
+    --text-dark:   #1a1a1a;
+    --text-light:  #e8e6e0;
+    --text-dim:    #999;
+    --text-dimmer: #666;
+    --accent:      #4a7aae;
+    --mono:        'IBM Plex Mono', monospace;
+    --sans:        'IBM Plex Sans', sans-serif;
+    --display:     'Syne', sans-serif;
+  }
+
+  /* ─── Base ─── */
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    font-weight: 300;
+    background: var(--bg-light);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ─── Navigation ─── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    height: 52px;
+    background: var(--bg-light);
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.4s, border-color 0.4s;
+  }
+
+  nav.dark {
+    background: var(--bg-dark);
+    border-bottom-color: var(--border);
+  }
+
+  .nav-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    transition: color 0.4s;
+  }
+
+  nav.dark .nav-title { color: var(--text-light); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text-dark); }
+  nav.dark .nav-links a:hover { color: var(--text-light); }
+  .nav-links a.active { color: var(--text-dark); }
+  nav.dark .nav-links a.active { color: var(--text-light); }
+
+  /* ─── Section base ─── */
+  .section {
+    position: relative;
+  }
+
+  /* Light sections */
+  .section-light {
+    background: var(--bg-light);
+    color: var(--text-dark);
+  }
+
+  /* Dark sections */
+  .section-dark {
+    background: var(--bg-dark);
+    color: var(--text-light);
+  }
+
+  /* ─── Section containers ─── */
+  #hero          { min-height: 100vh; }
+  #layer1        { }
+  #section-11    { }
+  #section-12    { }
+  #section-13    { }
+  #section-14    { }
+  #transition    { min-height: 60vh; }
+  #layer2        { }
+  #input-form    { }
+  #portal        { }
+  #layer3        { min-height: 80vh; }
+
+  /* ─── Typography helpers ─── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
+
+  .section-intro {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text-dim);
+    max-width: 600px;
+  }
+
+  /* ─── Dividers ─── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border-light);
+  }
+
+  .divider-dark {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ─── Scroll progress indicator ─── */
+  .progress-bar {
+    position: fixed;
+    top: 52px;
+    left: 0;
+    height: 2px;
+    background: var(--text-dark);
+    z-index: 99;
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+
+  /* ─── Placeholder content (to be replaced) ─── */
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    border: 1px dashed var(--border-light);
+    margin: 40px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+
+  .section-dark .placeholder {
+    border-color: var(--border);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ─── Navigation ─── -->
+<nav id="main-nav">
+  <div class="nav-title">The Transparent Rejection</div>
+  <ul class="nav-links">
+    <li><a href="#hero" class="active">Overview</a></li>
+    <li><a href="#layer1">The Problem</a></li>
+    <li><a href="#layer2">The Proposal</a></li>
+    <li><a href="#layer3">The Reflection</a></li>
+  </ul>
+</nav>
+
+<!-- ─── Scroll progress ─── -->
+<div class="progress-bar" id="progress-bar"></div>
+
+<!-- ─── Hero ─── -->
+<section id="hero" class="section section-light">
+  <style>
+    #hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 80px 80px;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .hero-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(48px, 7vw, 96px);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--text-dark);
+      max-width: 900px;
+      margin-bottom: 40px;
+    }
+
+    .hero-intro {
+      font-size: 18px;
+      line-height: 1.8;
+      color: #555;
+      max-width: 580px;
+      margin-bottom: 16px;
+      font-family: var(--sans);
+      font-weight: 300;
+    }
+
+    .hero-research {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      margin-bottom: 56px;
+    }
+
+    .hero-research span {
+      color: var(--text-dark);
+    }
+
+    .hero-start {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      text-decoration: none;
+      border-bottom: 1px solid var(--text-dark);
+      padding-bottom: 4px;
+      transition: gap 0.2s;
+    }
+
+    .hero-start:hover { gap: 20px; }
+
+    .hero-bottom {
+      position: absolute;
+      bottom: 40px;
+      left: 80px;
+      right: 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .hero-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      line-height: 1.8;
+    }
+
+    .hero-scroll {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+  </style>
+
+  <div class="hero-label">A research and design project</div>
+
+  <h1 class="hero-title">The Transparent Rejection</h1>
+
+  <p class="hero-intro">
+    If you've applied for a job recently, there's a good chance a computer screened your application before any human saw it.
+  </p>
+
+  <p class="hero-intro">
+    This project maps how automated hiring systems work, how candidates experience them, and what a fairer alternative could look like. By the end, you will see exactly how one of these systems would read you.
+  </p>
+
+  <div class="hero-research">
+    Built from real research —
+    <span>100 candidate testimonies</span>,
+    <span>50 job descriptions</span>,
+    <span>52 hiring platforms</span>.
+  </div>
+
+  <a href="#layer1" class="hero-start">
+    Start
+    <span>→</span>
+  </a>
+
+  <div class="hero-bottom">
+    <div class="hero-meta">
+      Politecnico di Milano · Communication Design<br>
+      Supervisor: Prof. Beatrice Gobbo · 2026
+    </div>
+    <div class="hero-scroll">
+      Scroll ↓
+    </div>
+  </div>
+
+</section>
+
+<!-- ─── Layer 1: The Problem ─── -->
+<section id="layer1" class="section section-light">
+
+  <div id="section-11" class="section section-light">
+    <style>
+      #section-11 {
+        padding: 120px 80px;
+        border-top: 1px solid var(--border-light);
+      }
+
+      .s11-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        margin-bottom: 80px;
+        align-items: start;
+      }
+
+      .s11-step {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 0 32px;
+        padding: 40px 0;
+        border-top: 1px solid var(--border-light);
+        align-items: start;
+      }
+
+      .s11-step:last-child { border-bottom: 1px solid var(--border-light); }
+
+      .s11-step-num {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-dim);
+        letter-spacing: 0.1em;
+        padding-top: 4px;
+      }
+
+      .s11-step-content {}
+
+      .s11-step-title {
+        font-family: var(--display);
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--text-dark);
+      }
+
+      .s11-step-text {
+        font-size: 15px;
+        line-height: 1.75;
+        color: #555;
+        max-width: 560px;
+      }
+
+      .s11-finding {
+        margin-top: 16px;
+        padding: 14px 18px;
+        background: #f0efe9;
+        border-left: 2px solid var(--text-dark);
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text-dark);
+        letter-spacing: 0.02em;
+      }
+
+      .s11-taxonomy {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px;
+        margin-top: 16px;
+        background: var(--border-light);
+      }
+
+      .s11-tax-cell {
+        background: var(--bg-light);
+        padding: 20px;
+      }
+
+      .s11-tax-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        margin-bottom: 6px;
+      }
+
+      .s11-tax-examples {
+        font-size: 13px;
+        color: #555;
+        line-height: 1.6;
+        font-style: italic;
+      }
+
+      .s11-footnote {
+        margin-top: 48px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-light);
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-dim);
+        line-height: 1.7;
+        max-width: 640px;
+      }
+    </style>
+
+    <div class="s11-header">
+      <div>
+        <span class="section-label">1.1 — How the system works</span>
+        <h2 class="section-title">A computer compares words. It is not reading you.</h2>
+      </div>
+      <div class="section-intro">
+        An Applicant Tracking System receives your CV as plain text. It extracts keywords and compares them against the job description using cosine similarity — a mathematical measure of word overlap. The higher the overlap, the higher your score. The lower your score, the faster you are eliminated.
+      </div>
+    </div>
+
+    <!-- Interactive keyword matching explainer -->
+    <div class="s11-interactive" style="max-width:780px;">
+      <style>
+        /* Section 1.1 interactive — aligned with site design system */
+        .s11-interactive {
+          padding: 40px 0;
+          margin-top: 48px;
+        }
+
+        .s11-interactive .step-desc {
+          font-family: var(--sans);
+          font-size: 16px;
+          color: var(--text-dark);
+          line-height: 1.7;
+          min-height: 52px;
+          margin-bottom: 32px;
+          font-weight: 300;
+          max-width: 600px;
+        }
+
+        .s11-interactive .columns {
+          display: grid;
+          grid-template-columns: 1fr 64px 1fr;
+          gap: 0;
+          align-items: center;
+        }
+
+        .s11-interactive .doc {
+          background: white;
+          border: 1px solid var(--border-light);
+          padding: 24px 28px;
+          min-height: 160px;
+        }
+
+        .s11-interactive .doc-label {
+          font-family: var(--mono);
+          font-size: 10px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--text-dim);
+          margin-bottom: 12px;
+          display: block;
+        }
+
+        .s11-interactive .doc-text {
+          font-family: var(--mono);
+          font-size: 13px;
+          line-height: 2.2;
+          color: #444;
+        }
+
+        .s11-interactive .word {
+          display: inline;
+          transition: all 0.35s ease;
+          border-radius: 2px;
+          padding: 1px 3px;
+        }
+
+        .s11-interactive .word.faded { color: #ccc; }
+        .s11-interactive .word.match { color: #1D9E75; background: #E8F7F1; font-weight: 500; }
+        .s11-interactive .word.no-match { color: #BA7517; background: #FDF0DC; font-weight: 500; }
+        .s11-interactive .word.jd-key { color: #185FA5; background: #E8F1FA; font-weight: 500; }
+        .s11-interactive .word.jd-faded { color: #ccc; }
+
+        .s11-interactive .middle {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+        }
+
+        .s11-interactive .arrow-line {
+          width: 1px;
+          height: 32px;
+          background: var(--border-light);
+        }
+
+        .s11-interactive .middle-label {
+          font-family: var(--mono);
+          font-size: 9px;
+          color: var(--text-dim);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .s11-interactive .score-block {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 24px;
+          margin-top: 32px;
+          opacity: 0;
+          transition: opacity 0.6s ease;
+        }
+
+        .s11-interactive .score-block.visible { opacity: 1; }
+
+        .s11-interactive .score-main {
+          padding: 24px;
+          border: 1px solid var(--border-light);
+          background: var(--bg-light);
+          text-align: center;
+        }
+
+        .s11-interactive .score-number {
+          font-family: var(--display);
+          font-size: 56px;
+          font-weight: 700;
+          color: var(--text-dark);
+          line-height: 1;
+          letter-spacing: -0.03em;
+        }
+
+        .s11-interactive .score-sub {
+          font-family: var(--mono);
+          font-size: 11px;
+          color: var(--text-dim);
+          margin-top: 6px;
+          letter-spacing: 0.04em;
+        }
+
+        .s11-interactive .legend {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          padding: 24px;
+          border: 1px solid var(--border-light);
+          background: var(--bg-light);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          justify-content: center;
+        }
+
+        .s11-interactive .legend.visible { opacity: 1; }
+
+        .s11-interactive .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-family: var(--mono);
+          font-size: 11px;
+          color: #555;
+        }
+
+        .s11-interactive .legend-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 2px;
+          flex-shrink: 0;
+        }
+
+        .s11-interactive .controls {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 32px;
+          padding-top: 24px;
+          border-top: 1px solid var(--border-light);
+        }
+
+        .s11-interactive .s11-btn {
+          font-family: var(--mono);
+          font-size: 11px;
+          letter-spacing: 0.06em;
+          color: var(--text-dark);
+          background: transparent;
+          border: 1px solid var(--border-light);
+          padding: 8px 20px;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+
+        .s11-interactive .s11-btn:hover {
+          border-color: var(--text-dark);
+          background: #f0efe9;
+        }
+
+        .s11-interactive .s11-btn:disabled {
+          opacity: 0.25;
+          cursor: default;
+        }
+
+        .s11-interactive .step-dots { display: flex; gap: 8px; }
+
+        .s11-interactive .s11-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--border-light);
+          transition: background 0.3s;
+        }
+
+        .s11-interactive .s11-dot.active { background: var(--text-dark); }
+
+        .s11-interactive .finding-bar {
+          margin-top: 32px;
+          padding: 16px 20px;
+          background: #f0efe9;
+          border-left: 2px solid var(--text-dark);
+          font-family: var(--mono);
+          font-size: 12px;
+          color: var(--text-dark);
+          letter-spacing: 0.02em;
+          line-height: 1.6;
+        }
+
+        .s11-interactive .s11-footnote {
+          font-family: var(--mono);
+          font-size: 10px;
+          color: var(--text-dim);
+          margin-top: 24px;
+          padding-top: 16px;
+          border-top: 1px solid var(--border-light);
+          line-height: 1.7;
+        }
+      </style>
+
+      <div class="step-desc" id="s11-desc">Your CV enters the system as plain text. The algorithm does not read it. It scans it.</div>
+
+      <div class="columns">
+        <div class="doc">
+          <div class="doc-label">Your CV</div>
+          <div class="doc-text">
+            <span class="word" id="s11w1">Led</span> <span class="word" id="s11w2">UX</span> <span class="word" id="s11w3">design</span> <span class="word" id="s11w4">projects</span> <span class="word" id="s11w5">for</span> <span class="word" id="s11w6">e-commerce</span> <span class="word" id="s11w7">platform.</span> <span class="word" id="s11w8">Collaborated</span> <span class="word" id="s11w9">with</span> <span class="word" id="s11w10">engineering</span> <span class="word" id="s11w11">teams.</span> <span class="word" id="s11w12">Proficient</span> <span class="word" id="s11w13">in</span> <span class="word" id="s11w14">Figma</span> <span class="word" id="s11w15">and</span> <span class="word" id="s11w16">Adobe</span> <span class="word" id="s11w17">XD.</span> <span class="word" id="s11w18">2</span> <span class="word" id="s11w19">years</span> <span class="word" id="s11w20">experience.</span> <span class="word" id="s11w21">Portfolio</span> <span class="word" id="s11w22">available.</span>
+          </div>
+        </div>
+        <div class="middle">
+          <div class="arrow-line"></div>
+          <span class="middle-label">compare</span>
+          <div class="arrow-line"></div>
+        </div>
+        <div class="doc">
+          <div class="doc-label">Job description</div>
+          <div class="doc-text">
+            <span class="word" id="s11j1">Junior</span> <span class="word" id="s11j2">Product</span> <span class="word" id="s11j3">Designer.</span> <span class="word" id="s11j4">Requirements:</span> <span class="word" id="s11j5">Figma,</span> <span class="word" id="s11j6">3+</span> <span class="word" id="s11j7">years</span> <span class="word" id="s11j8">UX</span> <span class="word" id="s11j9">experience,</span> <span class="word" id="s11j10">team</span> <span class="word" id="s11j11">collaboration,</span> <span class="word" id="s11j12">portfolio</span> <span class="word" id="s11j13">required,</span> <span class="word" id="s11j14">Adobe</span> <span class="word" id="s11j15">Illustrator.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="score-block" id="s11-score-block">
+        <div class="score-main">
+          <div class="score-number">65<span style="font-size:24px;opacity:0.35;font-weight:400">/100</span></div>
+          <div class="score-sub">similarity score — generated in milliseconds</div>
+        </div>
+        <div class="legend" id="s11-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#E8F7F1;border:1px solid #1D9E75"></div>keyword match</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#FDF0DC;border:1px solid #BA7517"></div>no match found</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#E8F1FA;border:1px solid #185FA5"></div>job description keyword</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="s11-btn" id="s11-prev-btn" onclick="s11PrevStep()" disabled>← Back</button>
+        <div class="step-dots">
+          <div class="s11-dot active" id="s11d0"></div>
+          <div class="s11-dot" id="s11d1"></div>
+          <div class="s11-dot" id="s11d2"></div>
+          <div class="s11-dot" id="s11d3"></div>
+        </div>
+        <button class="s11-btn" id="s11-next-btn" onclick="s11NextStep()">Next →</button>
+      </div>
+
+      <div class="finding-bar">Only 8 of 50 job listings showed candidates any kind of match score before applying. The other 42 gave nothing to self-assess against.</div>
+
+      <div class="s11-footnote">
+        "Traditional Applicant Tracking Systems depend heavily on keyword-based filtering, they often overlook contextually relevant candidates." — Hepzibah et al., <em>Journal of Theoretical and Applied Information Technology</em>, 2025
+      </div>
+    </div>
+
+  </div>
+
+  <div id="section-12" class="section section-light">
+    <style>
+      #section-12 {
+        padding: 120px 80px;
+        border-top: 1px solid var(--border-light);
+      }
+
+      #section-12 .s12-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        margin-bottom: 56px;
+        align-items: start;
+      }
+
+      .s12-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+        align-items: center;
+      }
+
+      .s12-filter-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        margin-right: 4px;
+      }
+
+      .s12-filter-btn {
+        font-family: var(--mono);
+        font-size: 11px;
+        padding: 6px 12px;
+        border: 1px solid var(--border-light);
+        background: white;
+        color: #666;
+        cursor: pointer;
+        border-radius: 2px;
+        transition: all 0.15s;
+        letter-spacing: 0.02em;
+      }
+
+      .s12-filter-btn:hover { border-color: var(--text-dark); color: var(--text-dark); }
+      .s12-filter-btn.active { color: white; border-color: transparent; }
+      .s12-filter-btn[data-theme="all"].active { background: var(--text-dark); }
+      .s12-filter-btn[data-theme="AI tools"].active { background: #185FA5; }
+      .s12-filter-btn[data-theme="Dehumanization"].active { background: #993C1D; }
+      .s12-filter-btn[data-theme="Hidden score anxiety"].active { background: #854F0B; }
+      .s12-filter-btn[data-theme="Technical glitches"].active { background: #3B6D11; }
+      .s12-filter-btn[data-theme="Instant rejection"].active { background: #533AB7; }
+
+      .s12-count-bar {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-bottom: 24px;
+        min-height: 18px;
+      }
+
+      .s12-count-bar span { color: var(--text-dark); font-weight: bold; }
+
+      .s12-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+      }
+
+      .s12-card {
+        background: white;
+        border: 1px solid var(--border-light);
+        border-radius: 2px;
+        padding: 14px;
+        font-size: 12px;
+        line-height: 1.6;
+        cursor: pointer;
+        transition: opacity 0.25s, border-color 0.15s;
+      }
+
+      .s12-card:hover { border-color: #aaa; }
+      .s12-card.faded { opacity: 0.08; pointer-events: none; }
+
+      .s12-card-text {
+        color: #333;
+        font-style: italic;
+        margin-bottom: 10px;
+        font-family: var(--sans);
+        font-weight: 300;
+      }
+
+      .s12-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .s12-card-sub {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: #bbb;
+      }
+
+      .s12-card-meta { display: flex; align-items: center; gap: 5px; }
+
+      .s12-theme-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+      }
+
+      .s12-dot-AI-tools { background: #185FA5; }
+      .s12-dot-Dehumanization { background: #993C1D; }
+      .s12-dot-Hidden-score-anxiety { background: #854F0B; }
+      .s12-dot-Technical-glitches { background: #3B6D11; }
+      .s12-dot-Instant-rejection { background: #533AB7; }
+      .s12-dot-Other { background: #ccc; }
+
+      .s12-img-indicator {
+        position: absolute; top: 10px; right: 10px;
+        width: 14px; height: 14px; opacity: 0.4;
+      }
+
+      /* Modal */
+      .s12-modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.5); z-index: 200;
+        align-items: center; justify-content: center; padding: 32px;
+      }
+
+      .s12-modal-overlay.open { display: flex; }
+
+      .s12-modal {
+        background: #f5f4f0; border: 1px solid var(--border-light);
+        border-radius: 2px; max-width: 680px; width: 100%;
+        max-height: 85vh; overflow-y: auto; padding: 40px;
+        position: relative;
+      }
+
+      .s12-modal-close {
+        position: absolute; top: 16px; right: 16px;
+        font-family: var(--mono); font-size: 11px; color: #bbb;
+        cursor: pointer; background: none; border: none;
+      }
+
+      .s12-modal-close:hover { color: var(--text-dark); }
+
+      .s12-modal-themes {
+        display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;
+      }
+
+      .s12-modal-theme-tag {
+        font-family: var(--mono); font-size: 10px;
+        padding: 3px 8px; border-radius: 2px; color: white;
+      }
+
+      .s12-tag-AI-tools { background: #185FA5; }
+      .s12-tag-Dehumanization { background: #993C1D; }
+      .s12-tag-Hidden-score-anxiety { background: #854F0B; }
+      .s12-tag-Technical-glitches { background: #3B6D11; }
+      .s12-tag-Instant-rejection { background: #533AB7; }
+      .s12-tag-Other { background: #888; }
+
+      .s12-modal-text {
+        font-size: 15px; line-height: 1.8; color: #222;
+        white-space: pre-wrap; font-style: italic;
+        margin-bottom: 24px; border-left: 2px solid var(--border-light);
+        padding-left: 20px; font-family: var(--sans); font-weight: 300;
+      }
+
+      .s12-modal-image {
+        width: 100%; border-radius: 2px; margin-bottom: 20px;
+        border: 1px solid var(--border-light);
+      }
+
+      .s12-modal-footer {
+        font-family: var(--mono); font-size: 11px; color: #888;
+      }
+    </style>
+
+    <div class="s12-header">
+      <div>
+        <span class="section-label">1.2 — Digital ethnography</span>
+        <h2 class="section-title">What candidates say about it.</h2>
+      </div>
+      <div class="section-intro">
+        100 comments from r/RecruitingHell, r/jobs, r/csMajors and others. Not a chart — real voices, real frustration, real tactics. Filter by theme to see the pattern underneath. Click any card to read more.
+      </div>
+    </div>
+
+    <div class="s12-filters">
+      <span class="s12-filter-label">Filter</span>
+      <button class="s12-filter-btn active" data-theme="all" onclick="s12Filter('all', this)">All 100</button>
+      <button class="s12-filter-btn" data-theme="AI tools" onclick="s12Filter('AI tools', this)">Using AI tools — 26</button>
+      <button class="s12-filter-btn" data-theme="Dehumanization" onclick="s12Filter('Dehumanization', this)">Dehumanization — 25</button>
+      <button class="s12-filter-btn" data-theme="Hidden score anxiety" onclick="s12Filter('Hidden score anxiety', this)">Hidden score anxiety — 22</button>
+      <button class="s12-filter-btn" data-theme="Technical glitches" onclick="s12Filter('Technical glitches', this)">Technical glitches — 21</button>
+      <button class="s12-filter-btn" data-theme="Instant rejection" onclick="s12Filter('Instant rejection', this)">Instant rejection — 21</button>
+    </div>
+
+    <div class="s12-count-bar" id="s12-count-bar">Showing all <span>100</span> comments</div>
+
+    <div class="s12-grid" id="s12-grid"></div>
+
+    <!-- Modal -->
+    <div class="s12-modal-overlay" id="s12-modal-overlay" onclick="s12CloseModal(event)">
+      <div class="s12-modal">
+        <button class="s12-modal-close" onclick="s12CloseModal()">✕</button>
+        <div class="s12-modal-themes" id="s12-modal-themes"></div>
+        <div class="s12-modal-text" id="s12-modal-text"></div>
+        <img class="s12-modal-image" id="s12-modal-image" src="" alt="" style="display:none">
+        <div class="s12-modal-footer" id="s12-modal-footer"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="section-13" class="section section-light">
+    <style>
+      #section-13 {
+        padding: 120px 80px;
+        border-top: 1px solid var(--border-light);
+      }
+
+      .s13-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        margin-bottom: 56px;
+        align-items: start;
+      }
+
+      .s13-category {
+        border-top: 1px solid var(--border-light);
+        padding: 32px 0;
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 40px;
+        align-items: start;
+      }
+
+      .s13-category:last-child { border-bottom: 1px solid var(--border-light); }
+
+      .s13-cat-left {}
+
+      .s13-cat-num {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        margin-bottom: 4px;
+      }
+
+      .s13-cat-name {
+        font-family: var(--mono);
+        font-size: 13px;
+        font-weight: bold;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+        letter-spacing: 0.02em;
+      }
+
+      .s13-cat-count {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-dim);
+      }
+
+      .s13-cat-right {}
+
+      .s13-cat-example {
+        font-size: 15px;
+        line-height: 1.7;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+      }
+
+      .s13-cat-example strong {
+        font-weight: normal;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .s13-cat-verdict {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-dim);
+        letter-spacing: 0.02em;
+      }
+
+      .s13-tags {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .s13-tag {
+        font-family: var(--mono);
+        font-size: 11px;
+        padding: 5px 10px;
+        background: white;
+        border: 1px solid var(--border-light);
+        border-radius: 2px;
+        color: #555;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .s13-tag:hover { border-color: var(--text-dark); color: var(--text-dark); }
+
+      .s13-gap {
+        margin-top: 56px;
+        padding: 40px 48px;
+        background: var(--text-dark);
+        color: white;
+      }
+
+      .s13-gap-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #555;
+        margin-bottom: 16px;
+      }
+
+      .s13-gap-statement {
+        font-size: 20px;
+        font-weight: normal;
+        line-height: 1.5;
+        color: white;
+        max-width: 640px;
+        font-family: var(--display);
+        font-weight: 600;
+      }
+
+      .s13-gap-sub {
+        margin-top: 12px;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: #555;
+      }
+    </style>
+
+    <div class="s13-header">
+      <div>
+        <span class="section-label">1.3 — Mapping existing platforms</span>
+        <h2 class="section-title">What currently exists.</h2>
+      </div>
+      <div class="section-intro">
+        52 commercial platforms mapped across five categories. Employer-side tools everywhere. Candidate-side tools that teach gaming. Nothing that gives candidates a transparent explanation of what happened — or a legitimate way to challenge it.
+      </div>
+    </div>
+
+    <div id="s13-categories"></div>
+
+    <div class="s13-gap">
+      <div class="s13-gap-label">The finding</div>
+      <div class="s13-gap-statement">Not one of the 52 platforms provides candidates with a transparent, specific explanation of how an automated decision was made about them.</div>
+      <div class="s13-gap-sub">The gap is not subtle — it is total.</div>
+    </div>
+
+  </div>
+
+  <div id="section-14" class="section section-light">
+    <style>
+      #section-14 {
+        padding: 120px 80px;
+        border-top: 1px solid var(--border-light);
+      }
+
+      .s14-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        margin-bottom: 56px;
+        align-items: start;
+      }
+
+      .s14-laws { display: flex; flex-direction: column; gap: 2px; }
+
+      .s14-law {
+        background: white;
+        border: 1px solid var(--border-light);
+        padding: 40px;
+      }
+
+      .s14-law-meta {
+        display: flex; align-items: baseline;
+        gap: 16px; margin-bottom: 20px;
+      }
+
+      .s14-law-name {
+        font-family: var(--mono);
+        font-size: 11px; letter-spacing: 0.1em;
+        text-transform: uppercase; color: #888;
+      }
+
+      .s14-law-status {
+        font-family: var(--mono);
+        font-size: 10px; color: white;
+        background: var(--text-dark);
+        padding: 2px 8px; border-radius: 1px;
+      }
+
+      .s14-law-title {
+        font-family: var(--display);
+        font-size: 20px; font-weight: 600;
+        margin-bottom: 16px; line-height: 1.3;
+      }
+
+      .s14-law-text {
+        font-size: 15px; color: #333; line-height: 1.8;
+      }
+
+      .s14-transition {
+        margin-top: 56px;
+        padding: 40px 48px;
+        background: var(--text-dark);
+        color: white;
+      }
+
+      .s14-transition-label {
+        font-family: var(--mono);
+        font-size: 10px; letter-spacing: 0.15em;
+        text-transform: uppercase; color: #555;
+        margin-bottom: 16px;
+      }
+
+      .s14-transition-text {
+        font-family: var(--display);
+        font-size: 20px; font-weight: 600;
+        line-height: 1.5; color: white;
+        max-width: 540px;
+      }
+
+      .s14-transition-arrow {
+        margin-top: 24px;
+        font-family: var(--mono);
+        font-size: 12px; color: #555;
+      }
+    </style>
+
+    <div class="s14-header">
+      <div>
+        <span class="section-label">1.4 — The legal framework</span>
+        <h2 class="section-title">The right exists. The design doesn't.</h2>
+      </div>
+      <div class="section-intro">
+        Two laws. Both in force. Neither being fulfilled by any commercial hiring platform.
+      </div>
+    </div>
+
+    <div class="s14-laws">
+      <div class="s14-law">
+        <div class="s14-law-meta">
+          <span class="s14-law-name">GDPR · Article 22</span>
+          <span class="s14-law-status">In force since 2018</span>
+        </div>
+        <div class="s14-law-title">The right not to be subject to a decision based solely on automated processing</div>
+        <div class="s14-law-text">Candidates have the right not to be subject to a decision based solely on automated processing. The right to obtain human intervention, to express their point of view, to contest the decision.</div>
+      </div>
+
+      <div class="s14-law">
+        <div class="s14-law-meta">
+          <span class="s14-law-name">EU AI Act · Article 14</span>
+          <span class="s14-law-status">In force since 2024</span>
+        </div>
+        <div class="s14-law-title">High-risk AI systems must be designed to allow human oversight</div>
+        <div class="s14-law-text">High-risk AI systems must be designed to allow human oversight. Recruitment AI is classified as high-risk.</div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ─── Transition ─── -->
+<section id="transition" class="section section-light">
+  <style>
+    #transition {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 80px;
+      text-align: center;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .transition-pre {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+
+    .transition-statement {
+      font-family: var(--display);
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text-dark);
+      max-width: 800px;
+      margin-bottom: 48px;
+    }
+
+    .transition-arrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: gap 0.2s;
+    }
+
+    .transition-arrow:hover { gap: 20px; color: var(--text-dark); }
+  </style>
+
+  <div class="transition-pre">You have seen the problem.</div>
+  <div class="transition-statement">Here is what could have been different.</div>
+  <a href="#layer2" class="transition-arrow">See the proposal <span>→</span></a>
+
+</section>
+
+<!-- ─── Layer 2: The Proposal ─── -->
+<section id="layer2" class="section section-dark">
+  <style>
+    #layer2 { padding: 0; }
+
+    /* ─── Input form ─── */
+    #input-form {
+      padding: 120px 80px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .l2-form-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      margin-bottom: 64px;
+      align-items: start;
+    }
+
+    .l2-form-title {
+      font-family: var(--display);
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text-light);
+      margin-bottom: 0;
+    }
+
+    .l2-form-intro {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #666;
+      line-height: 1.8;
+      letter-spacing: 0.02em;
+      padding-top: 8px;
+    }
+
+    .l2-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      max-width: 720px;
+    }
+
+    .l2-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .l2-field.full { grid-column: 1 / -1; }
+
+    .l2-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #666;
+    }
+
+    .l2-input {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      color: var(--text-light);
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 300;
+      padding: 14px 18px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .l2-input:focus { border-color: #555; }
+    .l2-input::placeholder { color: #444; }
+
+    .l2-select {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      color: var(--text-light);
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      padding: 14px 18px;
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+      appearance: none;
+      transition: border-color 0.2s;
+    }
+
+    .l2-select:focus { border-color: #555; }
+
+    .l2-select option { background: #161616; }
+
+    .l2-radio-group {
+      display: flex;
+      gap: 2px;
+    }
+
+    .l2-radio-btn {
+      flex: 1;
+      padding: 14px;
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      color: #666;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .l2-radio-btn:hover { border-color: #555; color: var(--text-light); }
+    .l2-radio-btn.selected { background: var(--text-light); color: var(--bg-dark); border-color: var(--text-light); }
+
+    .l2-submit-wrap {
+      grid-column: 1 / -1;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .l2-submit {
+      font-family: var(--display);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      padding: 16px 48px;
+      background: var(--text-light);
+      color: var(--bg-dark);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .l2-submit:hover { background: #ccc; }
+    .l2-submit:disabled { background: #2a2a2a; color: #555; cursor: default; }
+
+    .l2-submit-note {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #444;
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+    }
+
+    /* ─── Loading state ─── */
+    #l2-loading {
+      display: none;
+      padding: 80px;
+      text-align: center;
+    }
+
+    .l2-loading-text {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: #555;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: l2pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes l2pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* ─── Portal screens ─── */
+    #portal { display: none; }
+
+    .portal-screen {
+      display: none;
+      min-height: 100vh;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .portal-screen.active { display: block; }
+
+    /* Portal header */
+    .portal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      border-bottom: 1px solid #2a2a2a;
+      background: #0f0f0f;
+      position: sticky;
+      top: 52px;
+      z-index: 50;
+    }
+
+    .portal-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-light);
+    }
+
+    .portal-logo span { color: #555; }
+
+    .portal-header-right {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Portal breadcrumb */
+    .portal-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 40px;
+      border-bottom: 1px solid #2a2a2a;
+      background: #161616;
+    }
+
+    .portal-bc-item {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #444;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .portal-bc-item:hover { color: #888; }
+    .portal-bc-item.active { color: var(--text-light); cursor: default; }
+    .portal-bc-sep { color: #333; font-size: 10px; }
+
+    /* Portal nav buttons */
+    .portal-nav {
+      padding: 16px 40px;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f0f0f;
+      position: sticky;
+      bottom: 0;
+      z-index: 50;
+    }
+
+    .portal-nav-left {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #444;
+      letter-spacing: 0.06em;
+    }
+
+    .portal-nav-btns { display: flex; gap: 12px; }
+
+    .portal-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      padding: 8px 20px;
+      border: 1px solid #333;
+      background: transparent;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .portal-btn:hover { border-color: #666; color: var(--text-light); }
+
+    .portal-btn.primary {
+      background: var(--text-light);
+      color: #0f0f0f;
+      border-color: var(--text-light);
+    }
+
+    .portal-btn.primary:hover { background: #ccc; }
+    .portal-btn.primary.disabled { background: #2a2a2a; color: #444; border-color: #2a2a2a; pointer-events: none; }
+
+    /* ─── Screen 01 ─── */
+    .s01-main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 200px);
+    }
+
+    .s01-left {
+      padding: 64px 56px;
+      border-right: 1px solid #2a2a2a;
+    }
+
+    .s01-right {
+      padding: 64px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .s01-candidate-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .s01-name {
+      font-family: var(--display);
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      margin-bottom: 12px;
+      color: var(--text-light);
+    }
+
+    .s01-role {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .s01-company {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: #555;
+    }
+
+    .s01-score-block { margin-top: 48px; }
+
+    .s01-score-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 12px;
+    }
+
+    .s01-score-display {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .s01-score-num {
+      font-family: var(--display);
+      font-size: 80px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--text-light);
+    }
+
+    .s01-score-sep {
+      font-family: var(--mono);
+      font-size: 32px;
+      color: #444;
+    }
+
+    .s01-score-max {
+      font-family: var(--display);
+      font-size: 32px;
+      font-weight: 400;
+      color: #444;
+    }
+
+    .s01-bar-wrap {
+      width: 100%;
+      height: 3px;
+      background: #2a2a2a;
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .s01-bar-fill {
+      height: 100%;
+      background: #555;
+    }
+
+    .s01-bar-threshold {
+      position: absolute;
+      right: 0; top: -4px;
+      height: 11px; width: 1px;
+      background: #c0392b;
+    }
+
+    .s01-verdict {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #555;
+      letter-spacing: 0.04em;
+    }
+
+    .s01-notice {
+      margin-top: 40px;
+      padding: 20px 24px;
+      border: 1px solid #2a2a2a;
+      border-left: 2px solid #444;
+    }
+
+    .s01-notice-text {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #888;
+      line-height: 1.7;
+    }
+
+    .s01-notice-text strong { color: var(--text-light); font-weight: 500; }
+
+    .s01-pathways-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 32px;
+    }
+
+    .s01-pathway {
+      border: 1px solid #2a2a2a;
+      padding: 28px 32px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .s01-pathway:hover { border-color: #444; background: #161616; }
+    .s01-pathway:last-child { margin-bottom: 0; }
+
+    .s01-pathway-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #555;
+      flex-shrink: 0;
+      padding-top: 3px;
+    }
+
+    .s01-pathway-title {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 6px;
+    }
+
+    .s01-pathway-desc {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .s01-pathway-arrow {
+      font-family: var(--mono);
+      font-size: 16px;
+      color: #555;
+      flex-shrink: 0;
+      padding-top: 2px;
+      margin-left: auto;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .s01-pathway:hover .s01-pathway-arrow { color: var(--text-light); transform: translateX(4px); }
+
+    /* ─── Screen 02 ─── */
+    .s02-main {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: calc(100vh - 200px);
+    }
+
+    .s02-sidebar {
+      border-right: 1px solid #2a2a2a;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .s02-sidebar-title {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-light);
+      line-height: 1.3;
+    }
+
+    .s02-sidebar-sub {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .s02-score-mini {
+      padding: 20px;
+      border: 1px solid #2a2a2a;
+      background: #161616;
+    }
+
+    .s02-score-mini-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .s02-score-mini-num {
+      font-family: var(--display);
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-light);
+      line-height: 1;
+    }
+
+    .s02-score-mini-bar {
+      width: 100%;
+      height: 3px;
+      background: #2a2a2a;
+      position: relative;
+      margin: 10px 0 6px;
+    }
+
+    .s02-score-mini-fill { height: 100%; background: #555; }
+    .s02-score-mini-thresh { position: absolute; right: 0; top: -4px; height: 11px; width: 1px; background: #c0392b; }
+
+    .s02-score-mini-verdict {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #c0392b;
+    }
+
+    .s02-cat-nav { display: flex; flex-direction: column; gap: 2px; }
+
+    .s02-cat-nav-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .s02-cat-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 2px;
+    }
+
+    .s02-cat-item:hover { border-color: #333; background: #161616; }
+    .s02-cat-item.active { border-color: #333; background: #161616; }
+
+    .s02-cat-item-name {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #666;
+    }
+
+    .s02-cat-item.active .s02-cat-item-name { color: var(--text-light); }
+
+    .s02-status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .s02-content { overflow-y: auto; padding: 40px 48px; }
+
+    .s02-panel { display: none; }
+    .s02-panel.active { display: block; }
+
+    .s02-panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .s02-panel-title {
+      font-family: var(--display);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    .s02-panel-desc {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #555;
+      line-height: 1.6;
+      max-width: 480px;
+    }
+
+    .s02-confidence {
+      text-align: right;
+      flex-shrink: 0;
+      margin-left: 24px;
+    }
+
+    .s02-conf-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .s02-conf-badge {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    .conf-high { background: #0d2018; color: #4CAF7D; border: 1px solid #2a6e4a; }
+    .conf-medium { background: #1a1505; color: #C9A227; border: 1px solid #7a6020; }
+    .conf-low { background: #1f0e09; color: #E07050; border: 1px solid #8b3a2a; }
+
+    .s02-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .s02-col-block {
+      padding: 24px;
+      border: 1px solid #2a2a2a;
+    }
+
+    .s02-col-block.matched { border-color: #2a6e4a; background: #0d2018; }
+    .s02-col-block.missed { border-color: #8b3a2a; background: #1f0e09; }
+
+    .s02-col-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .s02-col-block.matched .s02-col-label { color: #4CAF7D; }
+    .s02-col-block.missed .s02-col-label { color: #E07050; }
+
+    .s02-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #888;
+      padding: 6px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .s02-item:last-child { border-bottom: none; }
+    .s02-item-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .s02-col-block.matched .s02-item-dot { background: #4CAF7D; }
+    .s02-col-block.missed .s02-item-dot { background: #E07050; }
+
+    .s02-note {
+      padding: 20px 24px;
+      border: 1px solid #2a2a2a;
+      background: #161616;
+      border-left: 2px solid #c0392b;
+      margin-bottom: 16px;
+    }
+
+    .s02-note-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #c0392b;
+      margin-bottom: 8px;
+    }
+
+    .s02-note-text {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #666;
+      line-height: 1.7;
+    }
+
+    .s02-wtm {
+      padding: 20px 24px;
+      border: 1px solid #2a2a2a;
+      background: #161616;
+    }
+
+    .s02-wtm-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .s02-wtm-text {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.7;
+      font-family: var(--sans);
+      font-weight: 300;
+    }
+
+    /* ─── Screen 03 ─── */
+    .s03-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 64px 40px;
+    }
+
+    .s03-page-title {
+      font-family: var(--display);
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-light);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .s03-page-sub {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 64px;
+      max-width: 560px;
+    }
+
+    .s03-section { margin-bottom: 64px; }
+
+    .s03-section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 6px;
+    }
+
+    .s03-section-title {
+      font-family: var(--display);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .s03-eval-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .s03-eval-item {
+      padding: 16px 20px;
+      border: 1px solid #2a2a2a;
+      background: #161616;
+    }
+
+    .s03-eval-name {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .s03-eval-result {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #666;
+    }
+
+    .s03-eval-result.ok { color: #4CAF7D; }
+    .s03-eval-result.fail { color: #E07050; }
+    .s03-eval-result.uncertain { color: #C9A227; }
+
+    .s03-missed-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .s03-missed-item {
+      padding: 20px 24px;
+      border: 1px solid #2a2a2a;
+      background: #161616;
+      border-left: 2px solid #8b3a2a;
+    }
+
+    .s03-missed-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 6px;
+    }
+
+    .s03-missed-desc {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+      font-family: var(--sans);
+      font-weight: 300;
+    }
+
+    .s03-contest-note {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #444;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .s03-contestable-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .s03-contestable-item {
+      padding: 24px;
+      border: 1px solid #1a3a6e;
+      background: #090f1f;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+      transition: border-color 0.2s;
+    }
+
+    .s03-contestable-item.added { border-color: #2a5aae; background: #0d1628; }
+
+    .s03-contestable-title {
+      font-family: var(--display);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 6px;
+    }
+
+    .s03-contestable-desc {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+      font-family: var(--sans);
+      font-weight: 300;
+    }
+
+    .s03-add-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      padding: 10px 16px;
+      border: 1px solid #1a3a6e;
+      background: transparent;
+      color: #6a9aee;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .s03-add-btn:hover { border-color: #2a5aae; background: #0d1628; }
+    .s03-add-btn.added { border-color: #2a5aae; background: #2a5aae; color: white; cursor: default; }
+
+    .s03-dispute-counter {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 6px 14px;
+      border: 1px solid #1a3a6e;
+      background: #090f1f;
+      color: #6a9aee;
+      transition: all 0.3s;
+    }
+
+    .s03-dispute-counter.has-items { border-color: #2a5aae; color: #8ab4ff; }
+
+    /* ─── Screen 04 ─── */
+    .s04-content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 40px 80px;
+    }
+
+    .s04-page-title {
+      font-family: var(--display);
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-light);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .s04-page-sub {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    .s04-rights {
+      padding: 28px 32px;
+      border: 1px solid #2a2a2a;
+      background: #161616;
+      border-left: 2px solid #4a7aae;
+      margin-bottom: 40px;
+    }
+
+    .s04-rights-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #4a7aae;
+      margin-bottom: 12px;
+    }
+
+    .s04-rights-text {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.8;
+      font-family: var(--sans);
+      font-weight: 300;
+    }
+
+    .s04-rights-text strong { color: var(--text-light); font-weight: 400; }
+
+    .s04-case-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 12px;
+    }
+
+    .s04-case-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+
+    .s04-case-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      border: 1px solid #1a3a6e;
+      background: #090f1f;
+    }
+
+    .s04-case-check { font-family: var(--mono); font-size: 12px; color: #6a9aee; flex-shrink: 0; }
+
+    .s04-case-text {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .s04-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .s04-info-field {
+      padding: 14px 18px;
+      border: 1px solid #2a2a2a;
+      background: #161616;
+    }
+
+    .s04-info-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 4px;
+    }
+
+    .s04-info-value {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #666;
+    }
+
+    .s04-statement-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 8px;
+    }
+
+    .s04-statement-hint {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #444;
+      margin-bottom: 12px;
+    }
+
+    .s04-textarea {
+      width: 100%;
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      color: var(--text-light);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.7;
+      padding: 16px 20px;
+      resize: vertical;
+      min-height: 120px;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 32px;
+    }
+
+    .s04-textarea:focus { border-color: #4a7aae; }
+    .s04-textarea::placeholder { color: #333; }
+
+    .s04-submit-block { padding-top: 32px; border-top: 1px solid #2a2a2a; }
+
+    .s04-submit-note {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #444;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .s04-submit-btn {
+      font-family: var(--display);
+      font-size: 16px;
+      font-weight: 600;
+      padding: 16px 40px;
+      background: var(--text-light);
+      color: #0f0f0f;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+
+    .s04-submit-btn:hover { background: #ccc; }
+
+    .s04-confirmation {
+      display: none;
+      text-align: center;
+      padding: 64px 40px;
+    }
+
+    .s04-confirmation.visible { display: block; }
+
+    .s04-conf-icon { font-size: 32px; margin-bottom: 24px; }
+
+    .s04-conf-title {
+      font-family: var(--display);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 16px;
+    }
+
+    .s04-conf-sub {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #555;
+      line-height: 1.8;
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+
+    .s04-conf-ref {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #444;
+      padding: 12px 24px;
+      border: 1px solid #2a2a2a;
+      display: inline-block;
+    }
+  </style>
+
+  <div id="input-form">
+    <div class="l2-form-header">
+      <div>
+        <span class="section-label" style="color:#444">The Proposal</span>
+        <h2 class="l2-form-title">See how the system<br>would read you.</h2>
+      </div>
+      <div class="l2-form-intro">
+        You have just seen how automated hiring systems work, what candidates experience, and what the law requires. Now enter a few details about yourself — and see exactly how an algorithm would classify your profile.
+      </div>
+    </div>
+
+    <div class="l2-form" id="l2-form">
+      <div class="l2-field full">
+        <label class="l2-label">Your job title</label>
+        <input class="l2-input" id="l2-title" type="text" placeholder="e.g. Junior UX Designer" required>
+      </div>
+
+      <div class="l2-field">
+        <label class="l2-label">Career level</label>
+        <select class="l2-select" id="l2-level" required>
+          <option value="" disabled selected>Select level</option>
+          <option value="Entry level">Entry level</option>
+          <option value="Mid level">Mid level</option>
+          <option value="Senior">Senior</option>
+        </select>
+      </div>
+
+      <div class="l2-field">
+        <label class="l2-label">Degree field</label>
+        <input class="l2-input" id="l2-degree" type="text" placeholder="e.g. Communication Design" required>
+      </div>
+
+      <div class="l2-field">
+        <label class="l2-label">Years of experience</label>
+        <input class="l2-input" id="l2-years" type="number" min="0" max="40" placeholder="e.g. 2" required>
+      </div>
+
+      <div class="l2-field">
+        <label class="l2-label">Career gaps or non-linear path?</label>
+        <div class="l2-radio-group">
+          <div class="l2-radio-btn" onclick="l2SelectRadio(this, 'gap-yes')">Yes</div>
+          <div class="l2-radio-btn" onclick="l2SelectRadio(this, 'gap-no')">No</div>
+        </div>
+        <input type="hidden" id="l2-gap" value="">
+      </div>
+
+      <div class="l2-submit-wrap">
+        <button class="l2-submit" type="button" onclick="l2Submit()">See how the system reads you</button>
+        <div class="l2-submit-note">This is a simulation.<br>Not a real ATS evaluation.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="l2-loading">
+    <div class="l2-loading-text">Analysing profile...</div>
+  </div>
+
+  <!-- Portal -->
+  <div id="portal">
+
+    <!-- Portal Header -->
+    <div class="portal-header">
+      <div class="portal-logo">Kortex <span>ATS</span></div>
+      <div class="portal-header-right" id="portal-ref">Ref #KX-2024-00000</div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="portal-breadcrumb">
+      <span class="portal-bc-item active" id="bc-0" onclick="portalGo(0)">Score</span>
+      <span class="portal-bc-sep">→</span>
+      <span class="portal-bc-item" id="bc-1" onclick="portalGo(1)">How it was read</span>
+      <span class="portal-bc-sep">→</span>
+      <span class="portal-bc-item" id="bc-2" onclick="portalGo(2)">What was missed</span>
+      <span class="portal-bc-sep">→</span>
+      <span class="portal-bc-item" id="bc-3" onclick="portalGo(3)">Challenge</span>
+    </div>
+
+    <!-- Screen 01 -->
+    <div class="portal-screen active" id="ps-0">
+      <div class="s01-main">
+        <div class="s01-left">
+          <div class="s01-candidate-label">Applicant</div>
+          <div class="s01-name" id="s01-name">—</div>
+          <div class="s01-role" id="s01-role">—</div>
+          <div class="s01-company">Meridian</div>
+
+          <div class="s01-score-block">
+            <div class="s01-score-label">Compatibility score</div>
+            <div class="s01-score-display">
+              <div class="s01-score-num" id="s01-score">—</div>
+              <div class="s01-score-sep">/</div>
+              <div class="s01-score-max">100</div>
+            </div>
+            <div class="s01-bar-wrap">
+              <div class="s01-bar-fill" id="s01-bar-fill"></div>
+              <div class="s01-bar-threshold" id="s01-bar-thresh"></div>
+            </div>
+            <div class="s01-verdict" id="s01-verdict">—</div>
+          </div>
+
+          <div class="s01-notice">
+            <div class="s01-notice-text">
+              This decision was made <strong>automatically by Kortex ATS</strong>.<br>
+              No human reviewed your application before this outcome was generated.
+            </div>
+          </div>
+        </div>
+
+        <div class="s01-right">
+          <div class="s01-pathways-label">What would you like to do?</div>
+
+          <div class="s01-pathway" onclick="portalGo(1)">
+            <div class="s01-pathway-num">01</div>
+            <div>
+              <div class="s01-pathway-title">Understand why</div>
+              <div class="s01-pathway-desc">See how Kortex read your application across four categories.</div>
+            </div>
+            <div class="s01-pathway-arrow">→</div>
+          </div>
+
+          <div class="s01-pathway" onclick="portalGo(2)">
+            <div class="s01-pathway-num">02</div>
+            <div>
+              <div class="s01-pathway-title">See what the system missed</div>
+              <div class="s01-pathway-desc">Explore what the algorithm could not evaluate. Build a record.</div>
+            </div>
+            <div class="s01-pathway-arrow">→</div>
+          </div>
+
+          <div class="s01-pathway" onclick="portalGo(3)">
+            <div class="s01-pathway-num">03</div>
+            <div>
+              <div class="s01-pathway-title">Challenge this decision</div>
+              <div class="s01-pathway-desc">Under GDPR Art. 22 and EU AI Act Art. 14, you have the right to request human review.</div>
+            </div>
+            <div class="s01-pathway-arrow">→</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="portal-nav">
+        <div class="portal-nav-left" id="s01-footer">Decision generated in milliseconds</div>
+        <div class="portal-nav-btns">
+          <button class="portal-btn primary" onclick="portalGo(1)">Understand why →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 02 -->
+    <div class="portal-screen" id="ps-1">
+      <div class="s02-main">
+        <div class="s02-sidebar">
+          <div>
+            <div class="s02-sidebar-title">How Kortex read your application.</div>
+            <div class="s02-sidebar-sub" style="margin-top:8px">Four categories. What the system evaluated, what it found, and where its confidence was low.</div>
+          </div>
+
+          <div class="s02-score-mini">
+            <div class="s02-score-mini-label">Overall score</div>
+            <div class="s02-score-mini-num" id="s02-score-mini">—</div>
+            <div class="s02-score-mini-bar">
+              <div class="s02-score-mini-fill" id="s02-bar-fill"></div>
+              <div class="s02-score-mini-thresh" id="s02-bar-thresh"></div>
+            </div>
+            <div class="s02-score-mini-verdict" id="s02-verdict-mini">—</div>
+          </div>
+
+          <div class="s02-cat-nav">
+            <div class="s02-cat-nav-label">Categories</div>
+            <div class="s02-cat-item active" onclick="s02ShowCat('keywords', this)">
+              <span class="s02-cat-item-name">Keywords & Skills</span>
+              <div class="s02-status-dot" id="s02-dot-keywords"></div>
+            </div>
+            <div class="s02-cat-item" onclick="s02ShowCat('experience', this)">
+              <span class="s02-cat-item-name">Experience</span>
+              <div class="s02-status-dot" id="s02-dot-experience"></div>
+            </div>
+            <div class="s02-cat-item" onclick="s02ShowCat('education', this)">
+              <span class="s02-cat-item-name">Education</span>
+              <div class="s02-status-dot" id="s02-dot-education"></div>
+            </div>
+            <div class="s02-cat-item" onclick="s02ShowCat('profile', this)">
+              <span class="s02-cat-item-name">Profile & Identity</span>
+              <div class="s02-status-dot" id="s02-dot-profile"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="s02-content" id="s02-content">
+          <!-- Filled dynamically by Claude API -->
+          <div class="s02-panel active" id="s02-keywords">
+            <div class="s02-panel-header">
+              <div>
+                <div class="s02-panel-title">Keywords & Skills</div>
+                <div class="s02-panel-desc" id="s02-kw-desc">—</div>
+              </div>
+              <div class="s02-confidence">
+                <div class="s02-conf-label">Confidence</div>
+                <div class="s02-conf-badge" id="s02-kw-conf">—</div>
+              </div>
+            </div>
+            <div class="s02-two-col">
+              <div class="s02-col-block matched">
+                <div class="s02-col-label">Matched</div>
+                <div id="s02-kw-matched">—</div>
+              </div>
+              <div class="s02-col-block missed">
+                <div class="s02-col-label">Not found</div>
+                <div id="s02-kw-missed">—</div>
+              </div>
+            </div>
+            <div class="s02-wtm">
+              <div class="s02-wtm-label">What this means</div>
+              <div class="s02-wtm-text" id="s02-kw-wtm">—</div>
+            </div>
+          </div>
+
+          <div class="s02-panel" id="s02-experience">
+            <div class="s02-panel-header">
+              <div>
+                <div class="s02-panel-title">Experience</div>
+                <div class="s02-panel-desc" id="s02-exp-desc">—</div>
+              </div>
+              <div class="s02-confidence">
+                <div class="s02-conf-label">Confidence</div>
+                <div class="s02-conf-badge" id="s02-exp-conf">—</div>
+              </div>
+            </div>
+            <div class="s02-two-col">
+              <div class="s02-col-block matched">
+                <div class="s02-col-label">What was found</div>
+                <div id="s02-exp-matched">—</div>
+              </div>
+              <div class="s02-col-block missed">
+                <div class="s02-col-label">Where it failed</div>
+                <div id="s02-exp-missed">—</div>
+              </div>
+            </div>
+            <div class="s02-note" id="s02-exp-note" style="display:none">
+              <div class="s02-note-label">Rigid rule applied</div>
+              <div class="s02-note-text" id="s02-exp-note-text">—</div>
+            </div>
+            <div class="s02-wtm">
+              <div class="s02-wtm-label">What this means</div>
+              <div class="s02-wtm-text" id="s02-exp-wtm">—</div>
+            </div>
+          </div>
+
+          <div class="s02-panel" id="s02-education">
+            <div class="s02-panel-header">
+              <div>
+                <div class="s02-panel-title">Education</div>
+                <div class="s02-panel-desc" id="s02-edu-desc">—</div>
+              </div>
+              <div class="s02-confidence">
+                <div class="s02-conf-label">Confidence</div>
+                <div class="s02-conf-badge" id="s02-edu-conf">—</div>
+              </div>
+            </div>
+            <div class="s02-two-col">
+              <div class="s02-col-block matched">
+                <div class="s02-col-label">Matched</div>
+                <div id="s02-edu-matched">—</div>
+              </div>
+              <div class="s02-col-block missed">
+                <div class="s02-col-label">Not evaluated</div>
+                <div id="s02-edu-missed">—</div>
+              </div>
+            </div>
+            <div class="s02-wtm">
+              <div class="s02-wtm-label">What this means</div>
+              <div class="s02-wtm-text" id="s02-edu-wtm">—</div>
+            </div>
+          </div>
+
+          <div class="s02-panel" id="s02-profile">
+            <div class="s02-panel-header">
+              <div>
+                <div class="s02-panel-title">Profile & Identity</div>
+                <div class="s02-panel-desc" id="s02-prof-desc">—</div>
+              </div>
+              <div class="s02-confidence">
+                <div class="s02-conf-label">Confidence</div>
+                <div class="s02-conf-badge" id="s02-prof-conf">—</div>
+              </div>
+            </div>
+            <div class="s02-two-col">
+              <div class="s02-col-block matched">
+                <div class="s02-col-label">Partially matched</div>
+                <div id="s02-prof-matched">—</div>
+              </div>
+              <div class="s02-col-block missed">
+                <div class="s02-col-label">Not recognised</div>
+                <div id="s02-prof-missed">—</div>
+              </div>
+            </div>
+            <div class="s02-note">
+              <div class="s02-note-label">Low confidence flag</div>
+              <div class="s02-note-text" id="s02-prof-note">—</div>
+            </div>
+            <div class="s02-wtm">
+              <div class="s02-wtm-label">What this means</div>
+              <div class="s02-wtm-text" id="s02-prof-wtm">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="portal-nav">
+        <div class="portal-nav-left">Kortex ATS · Diagnostic Report</div>
+        <div class="portal-nav-btns">
+          <button class="portal-btn" onclick="portalGo(0)">← Back</button>
+          <button class="portal-btn primary" onclick="portalGo(2)">See what was missed →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 03 -->
+    <div class="portal-screen" id="ps-2">
+      <div class="s03-content">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+          <div class="s03-page-title">What the system missed.</div>
+          <div class="s03-dispute-counter" id="s03-counter">0 items added</div>
+        </div>
+        <div class="s03-page-sub">What Kortex evaluated, what it could not read, and — where the algorithm applied rules that a human could legitimately review — what you have the right to contest.</div>
+
+        <div class="s03-section">
+          <div class="s03-section-label">Section 01</div>
+          <div class="s03-section-title">What Kortex evaluated</div>
+          <div class="s03-eval-grid" id="s03-eval-grid">
+            <div class="s03-eval-item"><div class="s03-eval-name">Keywords & Skills</div><div class="s03-eval-result" id="s03-eval-kw">—</div></div>
+            <div class="s03-eval-item"><div class="s03-eval-name">Experience</div><div class="s03-eval-result" id="s03-eval-exp">—</div></div>
+            <div class="s03-eval-item"><div class="s03-eval-name">Education</div><div class="s03-eval-result" id="s03-eval-edu">—</div></div>
+            <div class="s03-eval-item"><div class="s03-eval-name">Profile & Identity</div><div class="s03-eval-result" id="s03-eval-prof">—</div></div>
+          </div>
+        </div>
+
+        <div class="s03-section">
+          <div class="s03-section-label">Section 02</div>
+          <div class="s03-section-title">What the system could not read</div>
+          <div class="s03-missed-list" id="s03-missed-list">—</div>
+        </div>
+
+        <div class="s03-section">
+          <div class="s03-section-label">Section 03</div>
+          <div class="s03-section-title">What you have the right to contest</div>
+          <div class="s03-contest-note">Items below are contestable under GDPR Art. 22 or EU AI Act Art. 14. Adding an item initiates a human review — it does not guarantee a different outcome.</div>
+          <div class="s03-contestable-list" id="s03-contestable-list">—</div>
+        </div>
+      </div>
+
+      <div class="portal-nav">
+        <div class="portal-nav-left">Kortex ATS · What Was Missed</div>
+        <div class="portal-nav-btns">
+          <button class="portal-btn" onclick="portalGo(1)">← Back</button>
+          <button class="portal-btn primary disabled" id="s03-proceed-btn" onclick="portalGo(3)">Review your dispute →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 04 -->
+    <div class="portal-screen" id="ps-3">
+      <div class="s04-content">
+        <div id="s04-form-content">
+          <div class="s04-page-title">Request human review.</div>
+          <div class="s04-page-sub">This is not a complaint form. It is a rights statement with a form attached. Review the grounds below, add a personal statement if you wish, and submit to request that a human recruiter at Meridian assess your application directly.</div>
+
+          <div class="s04-rights">
+            <div class="s04-rights-label">Your legal basis</div>
+            <div class="s04-rights-text">
+              Under <strong>GDPR Article 22</strong>, you have the right not to be subject to a decision based solely on automated processing — including the right to obtain human intervention, to express your point of view, and to contest the decision. Under <strong>EU AI Act Article 14</strong>, recruitment AI is classified as high-risk and must be designed to allow human oversight.
+            </div>
+          </div>
+
+          <div class="s04-case-label">Grounds for review</div>
+          <div class="s04-case-items" id="s04-case-items">—</div>
+
+          <div class="s04-case-label" style="margin-bottom:12px;">Applicant information</div>
+          <div class="s04-info-grid" id="s04-info-grid">
+            <div class="s04-info-field"><div class="s04-info-label">Role applied for</div><div class="s04-info-value" id="s04-role">—</div></div>
+            <div class="s04-info-field"><div class="s04-info-label">Reference</div><div class="s04-info-value" id="s04-ref">—</div></div>
+          </div>
+
+          <div class="s04-statement-label">Personal statement — optional</div>
+          <div class="s04-statement-hint">Add anything you want the human reviewer to know that the system could not evaluate.</div>
+          <textarea class="s04-textarea" placeholder="Write in your own words..."></textarea>
+
+          <div class="s04-submit-block">
+            <div class="s04-submit-note">Submitting this request does not guarantee a different outcome. It initiates a review by a human recruiter at Meridian who will assess your application directly. You will receive a response within 5 working days.</div>
+            <button class="s04-submit-btn" onclick="s04Submit()">Request human review</button>
+          </div>
+        </div>
+
+        <div class="s04-confirmation" id="s04-confirmation">
+          <div class="s04-conf-icon">✓</div>
+          <div class="s04-conf-title">Request submitted.</div>
+          <div class="s04-conf-sub">A human recruiter at Meridian will review your application and the grounds you identified. You will receive a response within 5 working days.</div>
+          <div class="s04-conf-ref" id="s04-conf-ref">Reference: —</div>
+        </div>
+      </div>
+
+      <div class="portal-nav">
+        <div class="portal-nav-left">Kortex ATS · Human Review Request</div>
+        <div class="portal-nav-btns">
+          <button class="portal-btn" onclick="portalGo(2)">← Back</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end portal -->
+
+</section>
+
+<!-- ─── Layer 3: The Reflection ─── -->
+<section id="layer3" class="section section-dark">
+  <style>
+    #layer3 {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 80px;
+      border-top: 1px solid #2a2a2a;
+      text-align: center;
+      position: relative;
+    }
+
+    .l3-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 48px;
+    }
+
+    .l3-pre {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 24px;
+    }
+
+    .l3-classification {
+      font-family: var(--display);
+      font-size: clamp(24px, 3vw, 40px);
+      font-weight: 700;
+      color: #444;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      max-width: 700px;
+      margin-bottom: 64px;
+      min-height: 60px;
+    }
+
+    .l3-classification.loaded {
+      color: var(--text-light);
+    }
+
+    .l3-divider {
+      width: 40px;
+      height: 1px;
+      background: #333;
+      margin: 0 auto 64px;
+    }
+
+    .l3-statement {
+      font-family: var(--display);
+      font-size: clamp(28px, 4vw, 56px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text-light);
+      max-width: 800px;
+      margin-bottom: 48px;
+    }
+
+    .l3-statement em {
+      font-style: normal;
+      color: #555;
+    }
+
+    .l3-closing {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #444;
+      letter-spacing: 0.06em;
+      line-height: 1.8;
+      max-width: 480px;
+    }
+
+    .l3-bottom {
+      position: absolute;
+      bottom: 40px;
+      left: 80px;
+      right: 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .l3-bottom-left {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #333;
+      letter-spacing: 0.06em;
+      line-height: 1.8;
+    }
+
+    .l3-restart {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #444;
+      text-decoration: none;
+      border-bottom: 1px solid #333;
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .l3-restart:hover { color: var(--text-light); border-color: var(--text-light); }
+  </style>
+
+  <div class="l3-label">The Reflection</div>
+
+  <div class="l3-pre">The automated system read you as</div>
+
+  <div class="l3-classification" id="l3-classification">
+    —
+  </div>
+
+  <div class="l3-divider"></div>
+
+  <div class="l3-statement">
+    That is not who you are.<br>
+    <em>But it is how you were read.</em>
+  </div>
+
+  <div class="l3-closing">
+    This interface proposes a standard that currently exists nowhere in practice — transparent, specific, contestable. A legal obligation. A design problem. A solvable one.
+  </div>
+
+  <div class="l3-bottom">
+    <div class="l3-bottom-left">
+      The Transparent Rejection · Politecnico di Milano<br>
+      Communication Design · Supervisor: Prof. Beatrice Gobbo · 2026
+    </div>
+    <div class="l3-restart" onclick="l3Restart()">↑ Start again</div>
+  </div>
+
+</section>
+
+<!-- ─── Navigation scroll behavior ─── -->
+<script>
+  const nav = document.getElementById('main-nav');
+  const progressBar = document.getElementById('progress-bar');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  const sections = {
+    hero: document.getElementById('hero'),
+    layer1: document.getElementById('layer1'),
+    layer2: document.getElementById('layer2'),
+    layer3: document.getElementById('layer3'),
+  };
+
+  function updateNav() {
+    const scrollY = window.scrollY;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+
+    // Progress bar
+    progressBar.style.width = (scrollY / docHeight * 100) + '%';
+
+    // Dark nav when in dark sections
+    const layer2Top = sections.layer2.offsetTop;
+    if (scrollY >= layer2Top - 60) {
+      nav.classList.add('dark');
+      progressBar.style.background = '#e8e6e0';
+    } else {
+      nav.classList.remove('dark');
+      progressBar.style.background = '#1a1a1a';
+    }
+
+    // Active nav link
+    navLinks.forEach(link => link.classList.remove('active'));
+
+    if (scrollY >= sections.layer3.offsetTop - 100) {
+      document.querySelector('a[href="#layer3"]').classList.add('active');
+    } else if (scrollY >= sections.layer2.offsetTop - 100) {
+      document.querySelector('a[href="#layer2"]').classList.add('active');
+    } else if (scrollY >= sections.layer1.offsetTop - 100) {
+      document.querySelector('a[href="#layer1"]').classList.add('active');
+    } else {
+      document.querySelector('a[href="#hero"]').classList.add('active');
+    }
+  }
+
+  
+// ─── Section 1.2 Reddit Grid ───
+const IMAGE_DATA = {};
+
+const quotes = [{"text":"Did I just get rejected by AI?\nI applied to a role at Amazon on a SATURDAY that I thought I was a perfect match for- the skills on my resume aligned with the job description really well. Then I got rejected EXACTLY 12 hours from when I applied, and they had the audacity to say \"After careful review....\" like, theres no way anyone \"carefully\" reviewed my application.\nThe job listing was just posted recently too, and I have the experience level required. My only theory is that the minimum experience required was \"at least 1 year\", but I have been working for 11 months and 3 weeks, which didnt bypass the AI?","short":"Did I just get rejected by AI?\nI applied to a role at Amazon on a SATURDAY that I thought I was a perfect match for- the skills on my resume aligned with the...","sub":"r/cscareerquestions","date":"6mo ago","link":"https://www.reddit.com/r/cscareerquestions/comments/1n5wiye/did_i_just_get_rejected_by_ai/","themes":["Technical glitches","Instant rejection"],"image":null},{"text":"Auto-rejected by AI, but got shortlisted after emailing\nSo I applied for this job that seemed like a perfect fit and got an instant rejection. Kinda felt off given my qualifications\n\nI decided to email the hiring manager directly. Turns out my resume was filtered out by their AI screening, they reviewed it manually and I got shortlisted.\n\nMakes me wonder how many other opportunities I've missed because of automated screening\n\nIs this the AI's mistake or did the HR not tune it to accept my qualifications?","short":"Auto-rejected by AI, but got shortlisted after emailing — I decided to email the hiring manager directly. Turns out my resume was filtered out by their AI screening...","sub":"r/AskHR","date":"10mo ago","link":"https://www.reddit.com/r/AskHR/comments/1k5udq1/in_autorejected_by_ai_but_got_shortlisted_after/","themes":["Technical glitches","Instant rejection"],"image":null},{"text":"AI keeps rejecting my resumes\nI DONT CARE IF ITS AI. THE POINT IS IVE BEEN GETTING REJECTED INSTANTLY/SAME DAY FOR THE LAST MONTH.\n\nI've applied to several jobs that I think are low hanging fruit, no experience required. Retail jobs, front desk jobs, dishwasher jobs etc. I've concluded that I must be getting auto rejected by AI because there's no way they genuinely think I can't do these jobs. Is the solution to literally just copy and paste the job description into my resume? I've exhausted my unemployment and need a job ASAP.","short":"AI keeps rejecting my resumes — I DONT CARE IF ITS AI. THE POINT IS IVE BEEN GETTING REJECTED INSTANTLY/SAME DAY FOR THE LAST MONTH.","sub":"r/recruitinghell","date":"1y ago","link":"https://www.reddit.com/r/recruitinghell/comments/1h97vnl/ai_keeps_rejecting_my_resumes/","themes":["Hidden score anxiety"],"image":null},{"text":"Rejected by AI bots","short":"Rejected by AI bots","sub":"r/economy","date":"3mo ago","link":"https://www.reddit.com/r/economy/comments/1pmo3wz/rejected_by_ai_bots/","themes":["AI tools"],"image":"6_-_Rejected_by_AI_bots.jpeg"},{"text":"There are other factors that can work against you. What is your age, gender, and race? You said as soon as they saw you in person that they rejected you. That implies to me that there is something about you physically that is working against you and that AI may also be able to determine based on application screener questions.","short":"There are other factors that can work against you. What is your age, gender, and race? AI may also be able to determine based on application screener questions...","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/1h97vnl/ai_keeps_rejecting_my_resumes/","themes":["Hidden score anxiety"],"image":null},{"text":"Got Rejected Instantly\nHad a final round interview yesterday for a Summer 2024 internship. At the end of the interview, they told me to expect a response in about 3 weeks. I received a rejection email the next day. This is a massive company that takes several hundred interns. My responses were also adequate for all of their questions.","short":"Got Rejected Instantly — had a final round interview, told to expect a response in 3 weeks. Received a rejection email the next day.","sub":"csMajors","date":"3y ago","link":"https://www.reddit.com/r/csMajors/comments/15q1139/got_rejected_instantly/","themes":["Instant rejection"],"image":null},{"text":"An ATS is a database with a search bar. Recruiters don't scroll resumes. They type searches like: Product Manager AND Python AND Stripe. If your resume contains those exact words, you show up. If not, you don't exist. That's it.\n\nData visualization ≠ data storytelling. Stakeholder communication ≠ cross-functional alignment. If the job post uses a phrase, your resume should use that exact phrase.","short":"An ATS is a database with a search bar. If your resume contains those exact words, you show up. If not, you don't exist.","sub":"ResumesATS","date":"1mo ago","link":"http://reddit.com/r/ResumesATS/comments/1qu6y4t/why_your_resume_isnt_getting_interviews_from_ats/","themes":["Hidden score anxiety","Technical glitches"],"image":null},{"text":"Met all the job requirements, rejected instantly - what's the point anymore?\nI meet every single one of the criteria listed in the job description, yet I was still instantly rejected without even a chance to discuss my qualifications. The rejection came via \"smartrecruiters.com,\" whose tagline is ironically \"AI-Powered Software for Superhuman Hiring.\"","short":"Met all the job requirements, rejected instantly. The rejection came via \"smartrecruiters.com,\" whose tagline is ironically \"AI-Powered Software for Superhuman Hiring.\"","sub":"r/Switzerland","date":"1y ago","link":"https://www.reddit.com/r/Switzerland/comments/1gzisup/met_all_the_job_requirements_rejected_instantly/","themes":["AI tools","Hidden score anxiety"],"image":null},{"text":"It's this weird arms race: we use AI to stand out, they use AI to filter us out faster, and in the middle, real connections get lost. Most applications never even reach a real person. Nearly 80% of people feel unprepared for job hunting this year.","short":"It's this weird arms race: we use AI to stand out, they use AI to filter us out faster, and in the middle, real connections get lost.","sub":"r/JOBSEEKERSGUIDE","date":"1mo ago","link":"https://www.reddit.com/r/JOBSEEKERSGUIDE/comments/1qq94hs/how_ai_is_making_the_job_hunt_way_harder_in_2026/","themes":["AI tools"],"image":null},{"text":"Is It normal to get a rejection email less than 12 hours after application?\nI applied to Universal yesterday for a line cook position. Less than 12 hours later I was rejected. Im not sure why. My friend thinks my resume was probably trashed because of a keyword or AI filter but I'm unsure.","short":"Applied yesterday, rejected in under 12 hours. My friend thinks my resume was trashed because of a keyword or AI filter.","sub":"r/UniversalOrlando","date":"1y ago","link":"https://www.reddit.com/r/UniversalOrlando/comments/1jjxqvr/is_it_normal_to_get_a_rejection_email_less_than/","themes":["Instant rejection"],"image":null},{"text":"Kind of an update but still struggling, why was I rejected as a perfect candidate?\nI met every single requirement and more. I re applied using AI to help curate my cover letter and was rejected again. Not even a phone call, email, nothing! A month later the job was advertised again.","short":"I met every single requirement and more. Re-applied using AI, rejected again. Not even a phone call. A month later the job was advertised again.","sub":"r/careerguidance","date":"3mo ago","link":"https://www.reddit.com/r/careerguidance/comments/1ph3piv/kind_of_an_update_but_still_struggling_why_was_i/","themes":["Instant rejection"],"image":null},{"text":"Seriously? I applied for a freelance position. Considering my previous experience on a similar platform in a permanent, contracted role, I thought I would pass. Less than 12 hours later, I was rejected because my profile \"does not align with the requirements\" — but it's practically the same work I did in my previous job. So why was I rejected? Honestly, I have no idea.","short":"Rejected because my profile \"does not align with the requirements\" — but it's practically the same work I did in my previous job.","sub":"r/recruitinghell","date":"6mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1n6ne4m/seriously/","themes":["Instant rejection"],"image":null},{"text":"Is it normal for job descriptions to casually threaten you before you even join?\n\"Timings: 9:30 am till work gets over\"\n\"You can expect 10–12 hours of work in a day\"\n\"Majority of exits happen in the first 2 months because people can't adjust\"\nThis wasn't hidden. This wasn't Glassdoor gossip. This was sent to me officially.","short":"\"Majority of exits happen in the first 2 months because people can't adjust.\" This wasn't hidden. This was sent to me officially.","sub":"r/recruitinghell","date":"3mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1po1rkh/is_it_normal_for_job_descriptions_to_casually/","themes":["AI tools"],"image":null},{"text":"Imagine getting rejected before you even finish reading the job description","short":"Imagine getting rejected before you even finish reading the job description","sub":"r/LinkedInLunatics","date":"2mo ago","link":"https://www.reddit.com/r/LinkedInLunatics/comments/1pqq28h/imagine_getting_rejected_before_you_even_finish/","themes":["Instant rejection"],"image":"16_-_Imagine_getting_rejected_before_you_even_finish_reading_the_job_description.webp"},{"text":"What are the best prompts you've used to tailor a resume to a job description? For those of you who've successfully landed interviews, what exact prompts or instructions worked best for matching your resume to a job description in ChatGPT?","short":"What are the best prompts you've used to tailor a resume to a job description in ChatGPT?","sub":"r/jobsearchhacks","date":"3mo ago","link":"https://www.reddit.com/r/jobsearchhacks/comments/1p72y05/what_are_the_best_prompts_youve_used_to_tailor_a/","themes":["AI tools"],"image":null},{"text":"For everybody who says modify your resume to match the job description — ATS's are scanning to know when your resume was created. I can never understand how you can change what you have worked on for it to work for a junior recruiter who does not understand the depth.","short":"ATS's are scanning to know when your resume was created. I can never understand how you can change what you have worked on for it to work for a junior recruiter.","sub":"r/interviews","date":"1mo ago","link":"https://www.reddit.com/r/interviews/comments/1qggfxi/for_everybody_who_says_modify_your_resume_to/","themes":["AI tools"],"image":"18_-_For_everybody_who_says_modify_your_resume_to_match_the_job_description.webp"},{"text":"Some hiring managers personal remarks got attached to the posted job description. One of the biggest tech giants and AI pushers. a bit too much isn't it?","short":"Some hiring managers personal remarks got attached to the posted job description. One of the biggest tech giants and AI pushers.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1qenpl2/some_hiring_managers_personal_remarks_got/","themes":["Technical glitches"],"image":"19_-_Some_hiring_managers_personal_remarks_got_attached_to_the_posted_job_description__One_of_the_biggest_tech_giants_and_AI_pushers_.webp"},{"text":"The Job Description is a Wishlist, Not a Checklist. Stop self-rejecting. If you have 80% of the core skills and a strong ability to learn, apply. Companies write JDs dreaming of a perfect candidate who doesn't exist.","short":"The Job Description is a Wishlist, Not a Checklist. Companies write JDs dreaming of a perfect candidate who doesn't exist.","sub":"r/jobsearchhacks","date":"3mo ago","link":"https://www.reddit.com/r/jobsearchhacks/comments/1p72y05/what_are_the_best_prompts_youve_used_to_tailor_a/","themes":["AI tools"],"image":null},{"text":"I am looking for an AI website where i can upload my resume and also job description and the website can rewrite my resume to fit the job i am applying for.","short":"I am looking for an AI website where i can upload my resume and job description and the website can rewrite my resume to fit the job.","sub":"r/jobsearchhacks","date":"1mo ago","link":"https://www.reddit.com/r/jobsearchhacks/comments/1qleasi/need_help_finding_a_website_to_tailor_my_resume/","themes":["AI tools"],"image":null},{"text":"Some of the rejection I've gotten this past year. These are only the ones I've screenshotted. There were so many more that I just deleted without saving them","short":"Some of the rejection I've gotten this past year. These are only the ones I've screenshotted. There were so many more that I just deleted without saving them.","sub":"r/recruitinghell","date":"1y ago","link":"https://www.reddit.com/r/recruitinghell/comments/1fpi3xp/some_of_the_rejection_ive_gotten_this_past_year/","themes":["Dehumanization"],"image":"22_-_Some_of_the_rejection_I_ve_gotten_this_past_year__These_are_only_the_ones_I_ve_screenshotted__There_were_so_many_more_that_I_just_deleted_without_saving_them.webp"},{"text":"Outside of the bit I scribbled out this is an unedited screenshot of a recent rejection email.","short":"Outside of the bit I scribbled out this is an unedited screenshot of a recent rejection email.","sub":"r/recruitinghell","date":"1y ago","link":"https://www.reddit.com/r/recruitinghell/comments/1ikho69/outside_of_the_bit_i_scribbled_out_this_is_an/","themes":["Dehumanization"],"image":"23_-_Outside_of_the_bit_I_scribbled_out_this_is_an_unedited_screenshot_of_a_recent_rejection_email_.jpeg"},{"text":"screenshot of rejection letter","short":"screenshot of rejection letter","sub":"r/TAMUAdmissions","date":"2y ago","link":"https://www.reddit.com/r/TAMUAdmissions/comments/1ags7zo/screenshot_of_rejection_letter/","themes":["Dehumanization"],"image":"24_-_screenshot_of_rejection_letter.jpeg"},{"text":"Recruiter told me my CV was flagged as \"high-risk\" by AI screening system and they can't move forward with me\nI used to be in HIGH DEMAND. For years I had jobs lined up, all through recruiters. Not anymore. Until this one guy called me yesterday to say \"hey, we can't move forward with placing you, turns out because you've had so many short term gigs, the system flagged you as high-risk and I can't even submit you to my manager\".\n\nEVEN THOUGH THAT'S THE NATURE OF THE JOB. Whoever made those AI systems is gonna have a very special place in hell.","short":"My CV was flagged as \"high-risk\" by AI. I've had short-term gigs — but that's the nature of my job. The system doesn't understand context.","sub":"r/recruitinghell","date":"1mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1qrad85/recruiter_told_me_my_cv_was_flagged_as_highrisk/","themes":["Hidden score anxiety"],"image":"25_-_Recruiter_told_me_my_CV_was_flagged_as__22high-risk_22_by_AI_screening_system_and_they_can_t_move_forward_with_me.webp"},{"text":"93% of recruiters are now using AI screening tools. If you aren't writing for the bot first, you are invisible. It is scary to see it written out: a \"closed loop where software rejects software\".","short":"93% of recruiters are now using AI screening tools. A \"closed loop where software rejects software\".","sub":"r/Uhired_AI","date":"1mo ago","link":"https://www.reddit.com/r/Uhired_AI/comments/1qj9t7z/93_of_recruiters_are_now_using_ai_screening_tools/","themes":["AI tools"],"image":null},{"text":"Ahaha, so it sounds like: AI is preparing the resume, and another AI is reviewing that resume. The AI era is gonna be fun. The main problem is that most of the time I don't get any response from companies. Maybe companies don't care about their reputation, or they just can't handle the volume.","short":"AI is preparing the resume, and another AI is reviewing that resume. A closed loop. Most of the time I don't get any response from companies.","sub":"r/recruitinghell","date":"4mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1ob2pez/ai_screening_in_recruitment/","themes":["AI tools","Dehumanization"],"image":null},{"text":"AI is preparing the resume, and another AI is reviewing that resume. The main problem is that most of the time I don't get any response from companies.","short":"AI is preparing the resume, and another AI is reviewing that resume. Most of the time I don't get any response from companies.","sub":"r/Hirevire","date":"6mo ago","link":"https://www.reddit.com/r/Hirevire/comments/1ngrxyl/ai_screening_just_eliminated_78_of_recruitment/","themes":["Dehumanization","Instant rejection"],"image":null},{"text":"In 2019 I applied to a AAA studio and was interviewed by an HR specialist. The interview was going well until the atmosphere changed. I got a rejection letter written in perfect legalese. As time went on it got tougher and tougher to find a job because all the applications made you state your sexuality, pronouns, race, etc. You can't even skip it, it's required.","short":"I got a rejection letter written in perfect legalese. As time went on it got tougher to find a job. All the applications made you state your sexuality, pronouns, race.","sub":"r/recruitinghell","date":"3mo ago","link":"https://www.reddit.com/r/KotakuInAction/comments/1pa6rbn/in_2019_i_applied_to_a_aaa_studio_and_was/","themes":["Dehumanization","Hidden score anxiety","Technical glitches","Instant rejection"],"image":null},{"text":"I passed my technical interview! Got rejected for failing!\n\nAfter my technical interview, I waited 5 days in silence. The recruiter told me they were no longer proceeding with me due to being unable to ship and confirm the API (which I did in ~15 minutes). I even sent screenshots proving I shipped the product. They replied: No apology, thanks for your feedback (sent from iPhone lol).","short":"I passed my technical interview — got rejected for failing it. Sent screenshots proving I shipped the product. No apology.","sub":"r/recruitinghell","date":"7mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1muo93s/i_passed_my_technical_interview_got_rejected_for/","themes":["Technical glitches"],"image":"30_-_I_passed_my_technical_interview__Got_rejected_for_failing__.webp"},{"text":"Using AI to review resumes and float the good ones, sure. It sucks but that's fine. A straight up \"AI interview\" that involves talking or chatting with an AI? No way lmao.","short":"Using AI to review resumes and float the good ones, sure. An \"AI interview\" that involves talking or chatting with an AI? No way lmao.","sub":"r/careerguidance","date":"25d ago","link":"https://www.reddit.com/r/careerguidance/comments/1qxm4wo/","themes":["Dehumanization"],"image":null},{"text":"How the Hell am I suppose to survive? The job market is in complete shambles; no one's hiring, your resume is immediately rejected by AI, and not even the starting level jobs are hiring.","short":"The job market is in complete shambles; no one's hiring, your resume is immediately rejected by AI, not even starting level jobs are hiring.","sub":"r/GenZ","date":"2mo ago","link":"https://www.reddit.com/r/GenZ/comments/1q8tbn5/how_the_hell_am_i_suppose_survive/","themes":["Dehumanization"],"image":null},{"text":"AI said I'll get rejected by all 10 schools I applied to. Ruined my mood considering I fed it CDS and stuff like that","short":"AI said I'll get rejected by all 10 schools I applied to. Ruined my mood.","sub":"r/ApplyingToCollege","date":"2mo ago","link":"https://www.reddit.com/r/ApplyingToCollege/comments/1q4vmlr/ai_said_ill_get_rejected_by_all_10_schools_i/","themes":["Hidden score anxiety"],"image":null},{"text":"yeah you're cooked buddy, AI is trained on the direct feedback of AOs. This assessment is thus extremely accurate. You might consider applying to trade school now.","short":"Yeah you're cooked buddy, AI is trained on the direct feedback of AOs. This assessment is extremely accurate.","sub":"r/ApplyingToCollege","date":"2mo ago","link":"https://www.reddit.com/r/ApplyingToCollege/comments/1q4vmlr/","themes":["Hidden score anxiety"],"image":null},{"text":"Don't completely trust AI — just wait for the results.","short":"Don't completely trust AI — just wait for the results.","sub":"r/ApplyingToCollege","date":"2mo ago","link":"https://www.reddit.com/r/ApplyingToCollege/comments/1q4vmlr/","themes":["Hidden score anxiety"],"image":null},{"text":"Countries around the world will soon begin legislating to prohibit the use of AI-powered Applicant Tracking Systems for employee selection. The right to employment is a fundamental human right and should not be impeded by the misuse of these automated information systems.","short":"The right to employment is a fundamental human right and should not be impeded by the misuse of automated information systems.","sub":"r/economy","date":"3mo ago","link":"https://www.reddit.com/r/economy/comments/1pmo3wz/rejected_by_ai_bots/","themes":["Dehumanization"],"image":null},{"text":"I wonder if Gemini and ChatGPT would be accepted if they were to apply for a job that had an AI bot gate keeper?","short":"I wonder if Gemini and ChatGPT would be accepted if they were to apply for a job that had an AI bot gate keeper?","sub":"r/economy","date":"3mo ago","link":"https://www.reddit.com/r/economy/comments/1pmo3wz/rejected_by_ai_bots/","themes":["Dehumanization"],"image":null},{"text":"Is this recruiter using ChatGPT to reject me? I got a 3 round interview. The recruiter disappeared for a few weeks and then rejected me. But I guess something's wrong with the rejection email.","short":"Is this recruiter using ChatGPT to reject me? I guess something's wrong with the rejection email.","sub":"r/ChatGPT","date":"20d ago","link":"https://www.reddit.com/r/ChatGPT/comments/1r23z28/is_this_recruiter_using_chatgpt_to_reject_me/","themes":["Dehumanization"],"image":null},{"text":"I had a recruiter email me a rejection and halfway through reading it I was like — there's no way a human wrote this. It was super AI-sounding, overly polished and weirdly empathetic, like three paragraphs explaining how my \"unique strengths\" were appreciated. It honestly felt like they pasted my situation into ChatGPT and hit send. I just got professionally dumped by a robot.","short":"Halfway through reading the rejection I was like — there's no way a human wrote this. I just got professionally dumped by a robot.","sub":"r/ChatGPT","date":"20d ago","link":"https://www.reddit.com/r/ChatGPT/comments/1r23z28/","themes":["Dehumanization"],"image":null},{"text":"I've seen this exact same template in rejection emails from like a decade ago so it's kinda funny we've gone full circle.","short":"I've seen this exact same template in rejection emails from a decade ago. We've gone full circle.","sub":"r/ChatGPT","date":"20d ago","link":"https://www.reddit.com/r/ChatGPT/comments/1r23z28/","themes":["Dehumanization"],"image":null},{"text":"I got auto rejected by an AI chatbot literally five seconds after the interview. This was the most humiliating recruiting experience ive had lol.","short":"I got auto rejected by an AI chatbot literally five seconds after the interview. This was the most humiliating recruiting experience ive had lol.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/i_got_auto_rejected_by_an_ai_chatbot_literally/","themes":["Instant rejection"],"image":"43_-I_got_auto_rejected_by_an_AI_chatbot_literally_five_seconds_after_the_interview__This_was_the_most_humiliating__.webp"},{"text":"A lot of it is training for the model. The ghost jobs go a step further in assisting a business partner via incentives. It's like a Russian doll of incentives.","short":"Ghost jobs go a step further in assisting a business partner via incentives. It's like a Russian doll of incentives.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["Dehumanization"],"image":null},{"text":"Eye contact is a big one. Put googly eyes on your camera roll practice looking at the camera. Every 10 seconds think about smashing the clanker. This will help create genuine smiles.","short":"Eye contact is a big one. Put googly eyes on your camera, practice looking at the camera. Think about smashing the clanker. This will create genuine smiles.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["AI tools"],"image":null},{"text":"The AI video interview software are pretty brutal. They assess things like your tone, your mannerisms and will build a candidate profile of you the way you respond to questions and interact with the camera.","short":"The AI video interview software assesses your tone, mannerisms and builds a candidate profile of you the way you respond to questions.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["Dehumanization","Technical glitches"],"image":null},{"text":"The potential for discrimination against candidates with autism is quite strong with this method of interviewing. Given that it's a protected characteristic, I wonder if recruiters understand the risk they are taking.","short":"The potential for discrimination against candidates with autism is quite strong with this method of interviewing.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["Technical glitches"],"image":null},{"text":"I wonder how many protected characteristics this is discriminating on. Like interpreting the same mannerisms differently on men and women, or depending on race, age or I don't know what else.","short":"I wonder how many protected characteristics this is discriminating on. Interpreting the same mannerisms differently based on race, gender, age.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["Technical glitches"],"image":null},{"text":"Skin tone, age, accent, caste, gender... The biggest issue is that the people using it often don't understand how they are functioning. They are often trained from biased data, so they become super-biased and sometimes amazingly racist.","short":"Skin tone, age, accent, caste, gender... trained from biased data, so they become super-biased and sometimes amazingly racist.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["Hidden score anxiety"],"image":null},{"text":"If you prep your AI recruiter to: Select for eye contact. Deselect for fidgeting. Deselect for vocal tics or stammering. HR might be in for a world of shit one day.","short":"Select for eye contact. Deselect for fidgeting. Deselect for vocal tics or stammering. HR might be in for a world of shit one day.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["Hidden score anxiety"],"image":null},{"text":"That feels like it could be very racist very easily, then I guess so can human interviews","short":"That feels like it could be very racist very easily, then I guess so can human interviews.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["AI tools","Technical glitches"],"image":null},{"text":"Just apply again from a different email account. A friend of mine got a job doing that last year. AI or some sort of auto filtering rejected their first attempt. They did things differently the second time with a different account and got hired.","short":"Just apply again from a different email account. AI rejected the first attempt. Different account, different result. Got hired.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["AI tools"],"image":null},{"text":"Interviews are a two-way street. I never accept AI interviews, and I always reject them with that remark.","short":"Interviews are a two-way street. I never accept AI interviews, and I always reject them with that remark.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["Dehumanization"],"image":null},{"text":"The AI can auto terminate you if you're black or some other ethnicity they don't like","short":"The AI can auto terminate you if you're black or some other ethnicity they don't like.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["AI tools"],"image":null},{"text":"Failing 5 seconds in suggest you just didn't match their visual expectations, which is absolute fucking dogshit.","short":"Failing 5 seconds in suggests you just didn't match their visual expectations, which is absolute fucking dogshit.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["Instant rejection"],"image":null},{"text":"And discriminatory against any minorities, really, as the model would probably not be trained on a dataset including minorities.","short":"Discriminatory against any minorities, really, as the model would probably not be trained on a dataset including minorities.","sub":"r/recruitinghell","date":"2mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1pvd98h/","themes":["Technical glitches"],"image":null},{"text":"When applying to jobs became a numbers game, AI just helped people keep up.","short":"When applying to jobs became a numbers game, AI just helped people keep up.","sub":"r/SimpleApplyAI","date":"2mo ago","link":"https://www.reddit.com/r/SimpleApplyAI/comments/1qbwnba/job_applicants_are_winning_the_ai_arms_race/","themes":["AI tools","Dehumanization"],"image":null},{"text":"Feels like applicants finally leveled the playing field. Hiring needed this shake-up.","short":"Feels like applicants finally leveled the playing field. Hiring needed this shake-up.","sub":"r/SimpleApplyAI","date":"2mo ago","link":"https://www.reddit.com/r/SimpleApplyAI/comments/1qbwnba/","themes":["AI tools"],"image":null},{"text":"During COVID 2020 Wave 1, I sent out only 50 resumes, got ONLY ONE call back for a job with ONLY 3 applicants (including me). That was through 3rd degree referral.","short":"I sent out 50 resumes, got ONLY ONE call back for a job with ONLY 3 applicants. That was through 3rd degree referral.","sub":"r/SimpleApplyAI","date":"2mo ago","link":"https://www.reddit.com/r/SimpleApplyAI/comments/1qbwnba/","themes":["Dehumanization"],"image":null},{"text":"How do you pass AI screening? I just failed the same coding screening for the 4th time. I typed the exact same answer I used to use, but AI marked it as incorrect. I have no clue what to do.","short":"I failed the same coding screening for the 4th time. I typed the exact same answer I used to use, but AI marked it as incorrect.","sub":"r/outlier_ai","date":"2mo ago","link":"https://www.reddit.com/r/outlier_ai/comments/1q16my9/how_do_you_pass_ai_screening/","themes":["AI tools"],"image":null},{"text":"I also failed, even though the onboard is the same as apron evals, which I passed. This is just so fucking retarded...","short":"I also failed, even though the onboard is the same as apron evals, which I passed.","sub":"r/outlier_ai","date":"2mo ago","link":"https://www.reddit.com/r/outlier_ai/comments/1q16my9/","themes":["Hidden score anxiety"],"image":null},{"text":"Same issue. I have done the same coding question multiple times. This time I even completed everything with detailed explanations.","short":"Same issue. I completed everything with detailed explanations. Still failed.","sub":"r/outlier_ai","date":"2mo ago","link":"https://www.reddit.com/r/outlier_ai/comments/1q16my9/","themes":["Hidden score anxiety"],"image":null},{"text":"There are so many people in the community that also passed this screen multiple times, but failed due to AI grading.","short":"So many people passed this screen multiple times before, but now fail due to AI grading.","sub":"r/outlier_ai","date":"2mo ago","link":"https://www.reddit.com/r/outlier_ai/comments/1q16my9/","themes":["Technical glitches"],"image":null},{"text":"For the coding screening can I copy and paste the fixed code? I'm afraid to paste as it usually leads to deactivations.","short":"Can I copy and paste the fixed code? I'm afraid to paste as it usually leads to deactivations.","sub":"r/outlier_ai","date":"2mo ago","link":"https://www.reddit.com/r/outlier_ai/comments/1q16my9/","themes":["Hidden score anxiety"],"image":null},{"text":"Possible class action lawsuit involving using AI screening during hiring process. Lawyers are looking into whether a class action can be brought against a handful of companies that are part of the AI screening process.","short":"Lawyers are looking into whether a class action can be brought against companies that are part of the AI screening process.","sub":"r/recruitinghell","date":"1mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1qgqlj8/possible_class_action_lawsuit_involving_using_ai/","themes":["Instant rejection"],"image":null},{"text":"With so many job portals relying on AI screening, what kind of keywords or formats are most effective in modern resumes?","short":"With so many job portals relying on AI screening, what kind of keywords or formats are most effective in modern resumes?","sub":"r/resumes","date":"3mo ago","link":"https://www.reddit.com/r/resumes/comments/1p2u7a2/with_so_many_job_portals_relying_on_ai_screening/","themes":["Hidden score anxiety","Instant rejection"],"image":null},{"text":"Does it work if you put a bunch of keywords at the end of your resume in white text? As in, basically invisible — will it still get past the AI screening mechanism?","short":"Does it work if you put keywords at the end of your resume in white text — invisible to humans but visible to the AI?","sub":"r/resumes","date":"3mo ago","link":"https://www.reddit.com/r/resumes/comments/1p2u7a2/","themes":["AI tools","Instant rejection"],"image":null},{"text":"It's overblown. AI screening is not nearly as prevalent as you are led to believe. The majority of these companies didn't even pay for the simple features for their ATS.","short":"It's overblown. AI screening is not nearly as prevalent as you are led to believe.","sub":"r/resumes","date":"3mo ago","link":"https://www.reddit.com/r/resumes/comments/1p2u7a2/","themes":["Instant rejection"],"image":null},{"text":"i just read the job description and pick and choose certain terms and add them/replace them on my resume. gotten a few more callbacks that way. it's super tedious but better than just shooting an air ball","short":"I just pick certain terms from the job description and add them to my resume. Gotten a few more callbacks. Super tedious but better than an air ball.","sub":"r/resumes","date":"3mo ago","link":"https://www.reddit.com/r/resumes/comments/1p2u7a2/","themes":["Instant rejection"],"image":null},{"text":"LinkedIn jobs I just wanted to share some info I got from a recruiter. Apparently, LinkedIn jobs are not actually real leads. Jobs can stay up for 30 days and if they don't get removed by the poster it's automatically reposted. When I get rejection responses — is that an automatic rejection? Did anyone (even AI) screen it?","short":"LinkedIn jobs are not actually real leads. Jobs auto-repost after 30 days. When I get rejection responses — did anyone, even AI, screen it?","sub":"r/biotech","date":"6mo ago","link":"https://www.reddit.com/r/biotech/comments/1nf5cl1/linkedin_jobs/","themes":["Hidden score anxiety","Instant rejection"],"image":"70_-_LinkedIn_jobs_I_just_wanted_to_share_some_info_I_got_from_a_recruiter_helping_me_out__.jpeg"},{"text":"Rant: Rejected by AI\nI applied for a job with a foundation that I have a personal relationship with as a grantee and a grant panelist. A job for which I am absolutely qualified. I was rejected by their AI portal less than an hour after I applied. Really? If this is the future, I don't know what else to say.","short":"I applied for a job for which I am absolutely qualified, and have a personal relationship with the foundation. Rejected by their AI portal less than an hour after applying.","sub":"r/jobsearch","date":"2y ago","link":"https://www.reddit.com/r/jobsearch/comments/1djo6u2/rant_rejected_by_ai/","themes":["Technical glitches","Instant rejection"],"image":null},{"text":"Staying positive but it's difficult\nUnemployed for 6 months and counting. Applied to over 2k jobs. Edited my resume to every job description to avoid being rejected by AI. So drained honestly. Feel like a puppet in this society and economy. Want to cry everyday. I had such big dreams and now I can't even afford to buy food or pay rent.","short":"Applied to over 2k jobs. Edited my resume to every job description. So drained. Feel like a puppet. Want to cry everyday.","sub":"r/recruitinghell","date":"4mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1oij6iz/staying_positive_but_its_difficult/","themes":["AI tools","Dehumanization"],"image":null},{"text":"I have an anxiety everyday now bc of job searches and mini panic attacks how I will survive next week. It's so hard and brutal. My nervous system is done. I have facial twitching and I'm in my late 20s from the stress.","short":"I have anxiety and mini panic attacks about job searches. My nervous system is done. I have facial twitching from the stress.","sub":"r/recruitinghell","date":"4mo ago","link":"https://www.reddit.com/r/recruitinghell/comments/1oij6iz/","themes":["Dehumanization"],"image":null},{"text":"Same over 6 months — I might physically be alive but mentally im dead inside","short":"Same over 6 months — I might physically be alive but mentally im dead inside.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/1oij6iz/","themes":["Hidden score anxiety"],"image":null},{"text":"Apply for your opportunity to get rejected by AI","short":"Apply for your opportunity to get rejected by AI.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/apply_for_your_opportunity_to_get_rejected_by_ai/","themes":["Technical glitches"],"image":"78_-_Apply_for_your_opportunity_to_get_rejected_by_AI.webp"},{"text":"Reduce bias? You want to tell me the AI will factor in all possible accents and cultures, as well as possible speech impediments and what not?","short":"Reduce bias? The AI will factor in all possible accents and cultures? Speech impediments?","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Technical glitches"],"image":null},{"text":"Just because my process to get to the answer is different than yours doesn't mean it's wrong. This AI will absolutely botch that.","short":"Just because my process to get to the answer is different doesn't mean it's wrong. This AI will absolutely botch that.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Technical glitches"],"image":null},{"text":"Also awful for autistic people who often don't do well in standardized speech things","short":"Also awful for autistic people who often don't do well in standardized speech things.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Technical glitches"],"image":null},{"text":"Research has also shown that, since the majority of coders in the US tend to be white males, bias is magnified not reduced by using AI.","short":"Since the majority of coders in the US tend to be white males, bias is magnified not reduced by using AI.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Technical glitches"],"image":null},{"text":"Always thought that whole hiring process in most companies is severely flawed and bloated. There should be one interview between HR and candidate, then task, then return an evaluation to the candidate — what was done right, what was done wrong. Basically three steps. No need for AI or whatever.","short":"The hiring process is severely flawed. Should be three steps: interview, task, evaluation sent back. No need for AI or whatever.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Hidden score anxiety"],"image":null},{"text":"Your suggestion is only relevant if the AI is limited to the US. Usually it won't be. Also, AI designers know this and programme work arounds.","short":"Your suggestion is only relevant if the AI is limited to the US. Usually it won't be.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Instant rejection"],"image":null},{"text":"If only the humans that feed data to AI were not racist as well.","short":"If only the humans that feed data to AI were not racist as well.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Technical glitches"],"image":null},{"text":"90% sure AI hiring is a lawsuit waiting — what if you have Asperger's? Autism?","short":"90% sure AI hiring is a lawsuit waiting — what if you have Asperger's? Autism?","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Technical glitches"],"image":null},{"text":"Who wants to play f*cking games to get a job? Jesus H. Christ.","short":"Who wants to play f*cking games to get a job? Jesus H. Christ.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Hidden score anxiety"],"image":null},{"text":"As if they have any state-of-the-art AI, their cheap ass prob just coded it to listen for some keywords spoken in a neutral American (white) accent.","short":"Their cheap ass probably just coded it to listen for keywords spoken in a neutral American (white) accent.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Technical glitches"],"image":null},{"text":"HireVue, people who invented it and the companies who use it need to go to hell","short":"HireVue, people who invented it and the companies who use it need to go to hell.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Dehumanization"],"image":null},{"text":"I vote we record thousands of recorded applications full of nonsense to screw up the AI.","short":"I vote we record thousands of applications full of nonsense to screw up the AI.","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["AI tools"],"image":null},{"text":"I have had like 10 AI interviews in the past year and they are increasing (from europe).","short":"I have had like 10 AI interviews in the past year and they are increasing (from europe).","sub":"r/recruitinghell","date":"3y ago","link":"https://www.reddit.com/r/recruitinghell/comments/ymupwe/","themes":["Dehumanization"],"image":null},{"text":"I keep seeing people say that their resumes are being auto-rejected by AI bots. I've been working in HR for about 6 years now and all resumes are looked at by people at every company I've ever worked at. As far as I'm concerned, AI that scans resumes don't exist. Is this just a rumor?","short":"I've been in HR for 6 years — all resumes are looked at by people at every company I've worked at. AI that scans resumes? Is this just a rumor?","sub":"r/AskHR","date":"9mo ago","link":"https://www.reddit.com/r/AskHR/comments/1lcb93b/ny_but_actually_anywhere_ai_in_recruiting/","themes":["AI tools"],"image":null},{"text":"The AI scans resumes to assess factors like keywords, skills, experience, and even formatting to determine if a candidate is a good match for a role. It's not a rumour — it's just that not every company uses it yet.","short":"The AI scans resumes to assess keywords, skills, experience, formatting. It's not a rumour — not every company uses it yet.","sub":"r/AskHR","date":"9mo ago","link":"https://www.reddit.com/r/AskHR/comments/1lcb93b/","themes":["Instant rejection"],"image":null},{"text":"Is this something that jobs are required to disclose to candidates? If a candidate is denied based on AI screening should the company have to tell them that specific AI system denied them vs a real person?","short":"Should companies be required to disclose when an AI system — not a real person — denied the candidate?","sub":"r/AskHR","date":"9mo ago","link":"https://www.reddit.com/r/AskHR/comments/1lcb93b/","themes":["Instant rejection"],"image":null},{"text":"CV getting rejected by AI? I didn't tailor my CV — thought it was close enough to the job specification. Application got rejected less than 24 hours of submission. To be honest it's time consuming to tailor your CV all the time. Yeah I could get AI to do it for me but it just doesn't seem human at all.","short":"Rejected less than 24 hours after submission. To be honest, it's time consuming to tailor your CV. I could get AI to do it for me but it doesn't seem human.","sub":"r/AskHR","date":"9mo ago","link":"https://www.reddit.com/r/AskHR/comments/1lcb93b/","themes":["AI tools","Instant rejection"],"image":null},{"text":"If you don't have the matched skills, regardless how many times you tailor, you are still not a strong match.","short":"If you don't have the matched skills, regardless how many times you tailor, you are still not a strong match.","sub":"r/AskHR","date":"9mo ago","link":"https://www.reddit.com/r/AskHR/comments/1lcb93b/","themes":["Other"],"image":null},{"text":"Feeling hopeless and need advice. I've been applying for months and I either get rejected by AI, they simply reject me, or if I get a message back, once I respond, they ghost me and never contact me again. I'm feeling pretty hopeless about everything.","short":"I've been applying for months. Rejected by AI, or ghosted. I'm feeling pretty hopeless about everything.","sub":"r/AskHR","date":"9mo ago","link":"https://www.reddit.com/r/AskHR/comments/1lcb93b/","themes":["Instant rejection"],"image":null},{"text":"I found it better to apply on the company website and send an email to the HR department if one is posted on their careers page. I would also recommend gently exaggerating your skills to closely match with what you're applying to.","short":"Apply on the company website and email HR directly. I'd recommend gently exaggerating your skills to closely match what you're applying to.","sub":"r/AskHR","date":"9mo ago","link":"https://www.reddit.com/r/AskHR/comments/1lcb93b/","themes":["AI tools","Instant rejection"],"image":null},{"text":"Jobs should be required to send a rejection E-mail. People should have the right to know if they were rejected by AI (obvious if automatic), the interviewer (same day rejection), or by HR/hiring boards.","short":"People should have the right to know if they were rejected by AI, the interviewer, or HR. Not knowing is its own form of harm.","sub":"r/antiwork","date":"2y ago","link":"https://www.reddit.com/r/antiwork/comments/1eifx0l/jobs_should_be_required_to_send_a_rejection_email/","themes":["Hidden score anxiety"],"image":null},{"text":"I'm not sure getting hundreds of autogenerated rejections will really make you feel better.","short":"I'm not sure getting hundreds of autogenerated rejections will really make you feel better.","sub":"r/antiwork","date":"2y ago","link":"https://www.reddit.com/r/antiwork/comments/1eifx0l/","themes":["Hidden score anxiety"],"image":null},{"text":"It's not about feeling better, it's about knowing what is and isn't legit for a start. As well as the requirement for them to say within a timely matter post interview you won't be hired.","short":"It's not about feeling better. It's about knowing what is and isn't legit.","sub":"r/antiwork","date":"2y ago","link":"https://www.reddit.com/r/antiwork/comments/1eifx0l/","themes":["Hidden score anxiety"],"image":null},{"text":"The spray and pray tactic is starting to affect the economy as a whole.","short":"The spray and pray tactic is starting to affect the economy as a whole.","sub":"r/antiwork","date":"2y ago","link":"https://www.reddit.com/r/antiwork/comments/1eifx0l/","themes":["Dehumanization"],"image":null},{"text":"Just assume you didn't get the job until an offer is made.","short":"Just assume you didn't get the job until an offer is made.","sub":"r/antiwork","date":"2y ago","link":"https://www.reddit.com/r/antiwork/comments/1eifx0l/","themes":["Dehumanization"],"image":null},{"text":"Personally I believe that AI should be banned from being able to be used by companies for screening applicants. A human should be looking at each applicant. The only way to counteract this problem is to use AI to combat the AI that's filtering out your resume, and that's just a time waste that screws over people looking for work.","short":"AI should be banned from screening applicants. The only way to counteract it is to use AI to combat AI — and that's just a time waste.","sub":"r/antiwork","date":"2y ago","link":"https://www.reddit.com/r/antiwork/comments/1eifx0l/","themes":["AI tools"],"image":null},{"text":"I had 200 applications for a junior role at my firm last year. Of those 200, we interviewed six and hired one. I am not going to send a hundred bad news emails to strangers.","short":"200 applications, interviewed six, hired one. I am not going to send a hundred bad news emails to strangers.","sub":"r/antiwork","date":"2y ago","link":"https://www.reddit.com/r/antiwork/comments/1eifx0l/","themes":["Dehumanization"],"image":null},{"text":"Companies of a certain size should be able to prove that an open position is in fact open and that they are actively looking for a candidate. An occasional and unexpected audit by the state should do the trick.","short":"Companies should have to prove an open position is actually open. An occasional audit by the state should do the trick.","sub":"r/antiwork","date":"2y ago","link":"https://www.reddit.com/r/antiwork/comments/1eifx0l/","themes":["Dehumanization"],"image":null}];
+
+const s12ActiveFilters = new Set(['all']);
+
+function s12ThemeClass(t) { return t.replace(/\s+/g, '-'); }
+
+function s12BuildGrid() {
+  const grid = document.getElementById('s12-grid');
+  if (!grid) return;
+  quotes.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 's12-card';
+    card.dataset.themes = JSON.stringify(q.themes);
+    card.style.position = 'relative';
+    card.onclick = () => s12OpenModal(i);
+
+    const dots = q.themes.map(t =>
+      `<span class="s12-theme-dot s12-dot-${s12ThemeClass(t)}" title="${t}"></span>`
+    ).join('');
+
+    const imgIcon = q.image ? `<div class="s12-img-indicator" title="Contains screenshot"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="1"/><circle cx="5.5" cy="7" r="1.2"/><path d="M1 11l3.5-3.5L8 11l2.5-2 4.5 4"/></svg></div>` : '';
+
+    card.innerHTML = `${imgIcon}<div class="s12-card-text">"${q.short}"</div><div class="s12-card-footer"><span class="s12-card-sub">${q.sub || 'reddit'}</span><div class="s12-card-meta">${dots}</div></div>`;
+    grid.appendChild(card);
+  });
+}
+
+function s12Filter(theme, btn) {
+  if (theme === 'all') {
+    s12ActiveFilters.clear();
+    s12ActiveFilters.add('all');
+    document.querySelectorAll('.s12-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    s12ActiveFilters.delete('all');
+    document.querySelector('.s12-filter-btn[data-theme="all"]').classList.remove('active');
+    if (s12ActiveFilters.has(theme)) {
+      s12ActiveFilters.delete(theme);
+      btn.classList.remove('active');
+    } else {
+      s12ActiveFilters.add(theme);
+      btn.classList.add('active');
+    }
+    if (s12ActiveFilters.size === 0) {
+      s12ActiveFilters.add('all');
+      document.querySelector('.s12-filter-btn[data-theme="all"]').classList.add('active');
+    }
+  }
+
+  let visible = 0;
+  document.querySelectorAll('.s12-card').forEach(card => {
+    const themes = JSON.parse(card.dataset.themes);
+    const show = s12ActiveFilters.has('all') || themes.some(t => s12ActiveFilters.has(t));
+    card.classList.toggle('faded', !show);
+    if (show) visible++;
+  });
+
+  const bar = document.getElementById('s12-count-bar');
+  if (s12ActiveFilters.has('all')) {
+    bar.innerHTML = 'Showing all <span>100</span> comments';
+  } else {
+    bar.innerHTML = `<span>${visible}</span> of 100 comments match: ${[...s12ActiveFilters].join(', ')}`;
+  }
+}
+
+function s12OpenModal(i) {
+  const q = quotes[i];
+  document.getElementById('s12-modal-text').textContent = `"${q.text}"`;
+  document.getElementById('s12-modal-footer').textContent = (q.sub || 'reddit') + (q.date ? ' · ' + q.date : '');
+
+  const themesEl = document.getElementById('s12-modal-themes');
+  themesEl.innerHTML = q.themes.map(t =>
+    `<span class="s12-modal-theme-tag s12-tag-${s12ThemeClass(t)}">${t}</span>`
+  ).join('');
+
+  const img = document.getElementById('s12-modal-image');
+  img.style.display = 'none';
+  // Images available in standalone section_1_2_reddit_v4.html
+
+  document.getElementById('s12-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function s12CloseModal(e) {
+  if (!e || e.target === document.getElementById('s12-modal-overlay') || e.currentTarget.classList?.contains('s12-modal-close')) {
+    document.getElementById('s12-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+
+// ─── Section 1.1 Interactive Keyword Explainer ───
+(function() {
+  let s11Step = 0;
+  const s11Steps = 4;
+  const s11CvMatch = ['s11w2','s11w3','s11w14','s11w21'];
+  const s11CvNoMatch = ['s11w16','s11w17','s11w18','s11w19'];
+  const s11CvFade = ['s11w1','s11w4','s11w5','s11w6','s11w7','s11w8','s11w9','s11w10','s11w11','s11w12','s11w13','s11w15','s11w20','s11w22'];
+  const s11JdKey = ['s11j5','s11j6','s11j7','s11j8','s11j12','s11j14'];
+  const s11JdFade = ['s11j1','s11j2','s11j3','s11j4','s11j9','s11j10','s11j11','s11j13','s11j15'];
+  const s11Descs = [
+    'Your CV enters the system as plain text. The algorithm does not read it. It scans it.',
+    'The system extracts keywords — specific words it can match against a job description. Everything else becomes invisible.',
+    'The job description also yields a list of keywords. The system now has two lists of words.',
+    "The lists are compared. Words that match raise your score. Words that don't — including context, nuance, synonyms — do not exist to the system."
+  ];
+
+  function s11Reset() {
+    document.querySelectorAll('#section-11 .word').forEach(w => { w.className = 'word'; });
+    const sb = document.getElementById('s11-score-block');
+    const lg = document.getElementById('s11-legend');
+    if (sb) sb.classList.remove('visible');
+    if (lg) lg.classList.remove('visible');
+  }
+
+  function s11Apply(s) {
+    s11Reset();
+    const desc = document.getElementById('s11-desc');
+    if (desc) desc.textContent = s11Descs[s];
+
+    if (s >= 1) s11CvFade.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('faded'); });
+    if (s >= 2) {
+      s11JdKey.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('jd-key'); });
+      s11JdFade.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('jd-faded'); });
+    }
+    if (s === 3) {
+      s11CvMatch.forEach(id => { const el = document.getElementById(id); if(el) { el.classList.remove('faded'); el.classList.add('match'); }});
+      s11CvNoMatch.forEach(id => { const el = document.getElementById(id); if(el) { el.classList.remove('faded'); el.classList.add('no-match'); }});
+      const sb = document.getElementById('s11-score-block');
+      const lg = document.getElementById('s11-legend');
+      if (sb) sb.classList.add('visible');
+      if (lg) lg.classList.add('visible');
+    } else if (s === 1) {
+      s11CvMatch.concat(s11CvNoMatch).forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('faded'); });
+    }
+
+    for (let i = 0; i < s11Steps; i++) {
+      const d = document.getElementById('s11d' + i);
+      if (d) d.classList.toggle('active', i === s);
+    }
+    const prev = document.getElementById('s11-prev-btn');
+    const next = document.getElementById('s11-next-btn');
+    if (prev) prev.disabled = s === 0;
+    if (next) next.disabled = s === s11Steps - 1;
+  }
+
+  window.s11NextStep = function() { if (s11Step < s11Steps-1) { s11Step++; s11Apply(s11Step); } };
+  window.s11PrevStep = function() { if (s11Step > 0) { s11Step--; s11Apply(s11Step); } };
+})();
+
+document.addEventListener('DOMContentLoaded', s12BuildGrid);
+
+// ─── Section 1.3 Platform mapping ───
+const s13Platforms = [{"name":"manatal","type":"Applicant Tracking","pricing":"SMB/Mid-Market ($)","use_case":"Affordable AI resume parsing and social media enrichment for smaller firms."},{"name":"Deel","type":"Applicant Tracking","pricing":"Per-employee ($$)","use_case":"Hiring and paying international contractors/employees legally (EOR)."},{"name":"Humanly","type":"Assessment & Interview Intelligence","pricing":"Usage-based ($$)","use_case":"AI chat that screens candidates at scale before they get to a human."},{"name":"metaview","type":"Assessment & Interview Intelligence","pricing":"Per-seat","use_case":"AI that listens to live interviews and writes summaries for the recruiter."},{"name":"paradox","type":"Assessment & Interview Intelligence","pricing":"SMB: $1k/mo — Ent: $75k+/yr","use_case":"Uses an SMS chatbot to screen, schedule interviews, and handle offer letters 24/7."},{"name":"alex","type":"Assessment & Interview Intelligence","pricing":"Custom/Enterprise","use_case":"Conducts live video calls using an AI avatar with adaptive follow-up questions."},{"name":"gem","type":"Finding Candidates","pricing":"Mid-Market/Ent ($$)","use_case":"Automating email outreach sequences to passive candidates."},{"name":"fetcher","type":"Finding Candidates","pricing":"Enterprise ($$$)","use_case":"Deep learning models to predict when a candidate is likely to leave their current job."},{"name":"eightfold","type":"Finding Candidates","pricing":"Enterprise ($$$)","use_case":"Using AI to predict future potential rather than just past experience."},{"name":"zoho","type":"Applicant Tracking","pricing":"Free to Mid-Market ($)","use_case":"Integrated with the Zoho ecosystem; great for high-volume staffing agencies."},{"name":"jobright","type":"Candidate-Side Tools","pricing":"Basic: $0 — Premium: ~$30/mo","use_case":"Searches 20+ job boards and automatically fills out forms or emails recruiters on your behalf."},{"name":"loopcv","type":"Candidate-Side Tools","pricing":"Subscription ($)","use_case":"Automatically applies to jobs while the user sleeps."},{"name":"smartrecruiters","type":"Applicant Tracking","pricing":"Enterprise ($$$)","use_case":"Global hiring with a heavy focus on Candidate Experience modules."},{"name":"seekout","type":"Finding Candidates","pricing":"Enterprise ($$$)","use_case":"Diversity hiring, technical sourcing, and deep-web candidate profiles."},{"name":"careerflow","type":"Candidate-Side Tools","pricing":"Free/Freemium ($)","use_case":"A dashboard for candidates to track apps and optimize LinkedIn profiles."},{"name":"apna","type":"Curated Marketplaces","pricing":"Usage-based ($)","use_case":"High-volume hiring for the massive labor market in India/Emerging markets."},{"name":"glider","type":"Assessment & Interview Intelligence","pricing":"Mid-Market ($$)","use_case":"Cheat-proof coding tests and remote proctoring for technical roles."},{"name":"goperfect","type":"Assessment & Interview Intelligence","pricing":"Enterprise ($$$)","use_case":"Finds profiles across the web, reaches out with AI sequences, and ranks them automatically."},{"name":"handshake","type":"Curated Marketplaces","pricing":"Mid-Market/Ent ($$)","use_case":"The primary platform for university students and recent grads."},{"name":"greenhouse","type":"Applicant Tracking","pricing":"Mid-Market/Ent ($$)","use_case":"Focused on structured hiring and reducing interviewer bias."},{"name":"hirevue","type":"Assessment & Interview Intelligence","pricing":"Enterprise ($$$)","use_case":"Asynchronous video interviews analyzed by AI for facial and verbal cues."},{"name":"sapia","type":"Assessment & Interview Intelligence","pricing":"Starter: ~$1,200/yr — Pro: ~$35,000/yr","use_case":"Uses blind text-based chat interviews to reduce bias."},{"name":"brighthire","type":"Assessment & Interview Intelligence","pricing":"Mid-Market ($$)","use_case":"Recording interviews to ensure consistency and training for interviewers."},{"name":"braintrust","type":"Curated Marketplaces","pricing":"Transactional (%)","use_case":"A decentralized talent network for high-end tech freelancers."},{"name":"loxo","type":"Curated Marketplaces","pricing":"Per-user ($$)","use_case":"Specifically designed for headhunters rather than internal HR teams."},{"name":"lever","type":"Applicant Tracking","pricing":"Mid-Market/Ent ($$)","use_case":"Heavy focus on the relationship between recruiter and hiring manager."},{"name":"aiapply","type":"Candidate-Side Tools","pricing":"Subscription ($)","use_case":"Generates AI cover letters and fakes the tailoring of CVs for bots."},{"name":"perfect","type":"Curated Marketplaces","pricing":"Free for discovery","use_case":"HR Directors use it to discover vetted AI tools for sourcing, screening, and assessment."},{"name":"moonhub","type":"Finding Candidates","pricing":"Usage-based ($$)","use_case":"Conversational AI agents that autonomously find and vet candidates."},{"name":"LinkedIn Hiring Pro","type":"Finding Candidates","pricing":"Subscription-based ($)","use_case":"Provides a qualified shortlist using automated assessments."},{"name":"LinkedIn Recruiter","type":"Curated Marketplaces","pricing":"Lite: ~$170/mo — Corp: ~$1,080/mo","use_case":"Uses Hiring Assistant (an AI agent) to search, summarize, and shortlist candidates automatically."},{"name":"LinkedIn Premium Career","type":"Candidate-Side Tools","pricing":"~$30/mo","use_case":"Gives candidates Top Applicant badges and AI-powered insights about how they rank against other applicants."},{"name":"Beamery","type":"Finding Candidates","pricing":"Enterprise ($$$)","use_case":"AI-powered skills matching and long-term talent pipeline nurturing."},{"name":"Phenom","type":"Finding Candidates","pricing":"~$10,000/mo","use_case":"Personalizing the candidate journey and streamlining internal employee mobility."},{"name":"Radancy","type":"Finding Candidates","pricing":"Enterprise ($$$)","use_case":"Programmatic advertising that uses AI to optimize job board spending."},{"name":"Avature","type":"Finding Candidates","pricing":"Custom/Enterprise","use_case":"Highly configurable workflows for multinational enterprises."},{"name":"TurboHire","type":"Finding Candidates","pricing":"Starts at $40/mo","use_case":"Deep AI resume parsing and matching at every stage."},{"name":"TestGorilla","type":"Assessment & Interview Intelligence","pricing":"Free to $1,700+/yr","use_case":"Skills testing with automated cheating detection and performance reports."},{"name":"HackerRank","type":"Assessment & Interview Intelligence","pricing":"$199 - $449+/mo","use_case":"Standardized, skills-based evaluations for technical and coding roles."},{"name":"Codility","type":"Assessment & Interview Intelligence","pricing":"Enterprise ($$$)","use_case":"Evaluating programming, system design, and technical problem-solving skills."},{"name":"PyjamaHR","type":"Applicant Tracking","pricing":"SMB ($)","use_case":"Affordable AI resume scoring and JD matching specifically for startups."},{"name":"MokaHR","type":"Applicant Tracking","pricing":"Enterprise ($$$)","use_case":"Leading AI ATS in the Asian market for volume efficiency."},{"name":"Ashby","type":"Applicant Tracking","pricing":"~$300/mo","use_case":"All-in-one hiring for fast-scaling engineering teams."},{"name":"Workable","type":"Applicant Tracking","pricing":"~$299/mo","use_case":"AI-suggested candidates based on job description analysis."},{"name":"simplify","type":"Candidate-Side Tools","pricing":"Free to ~$12/mo","use_case":"1-click autofill to bypass complex application forms."},{"name":"Teal","type":"Candidate-Side Tools","pricing":"Free to ~$29/mo","use_case":"AI-powered resume tailoring and keyword matching."},{"name":"LazyApply","type":"Candidate-Side Tools","pricing":"~$99 - $249 (One-time)","use_case":"Automatically applying to 150-750+ jobs daily."},{"name":"Sonara","type":"Candidate-Side Tools","pricing":"Subscription ($$)","use_case":"An AI agent that finds and applies to jobs while you sleep."},{"name":"Wonsulting","type":"Candidate-Side Tools","pricing":"~$19.99/mo","use_case":"AI bullet point generation and resume score breakdown."},{"name":"Hired","type":"Curated Marketplaces","pricing":"Usage-based (%)","use_case":"Reverse marketplace where companies apply to candidates."},{"name":"Toptal","type":"Curated Marketplaces","pricing":"$60 - $150+/hr","use_case":"Dedicated to the top 3% of high-end global talent."},{"name":"Clinch","type":"Finding Candidates","pricing":"~$49/mo","use_case":"Recruitment marketing CRM treating candidates as leads."},{"name":"Revelo","type":"Curated Marketplaces","pricing":"Custom (%)","use_case":"Sourcing pre-vetted remote tech talent from Latin America."}];
+
+const s13Categories = [
+  { key: "Finding Candidates", num: "01", description: "<strong>Eightfold AI</strong> predicts future potential — targeting people who haven\'t applied and don\'t know they\'re being profiled.", verdict: "Candidate: invisible to the system. System: invisible to the candidate." },
+  { key: "Applicant Tracking", num: "02", description: "<strong>Workable</strong> instantly scores candidates based purely on lexical proximity to the job description. Score generated in seconds. No explanation sent.", verdict: "Score generated. Decision made. Candidate notified of nothing." },
+  { key: "Assessment & Interview Intelligence", num: "03", description: "<strong>HireVue</strong> judges candidates on facial movements and verbal cues. Proprietary. Invisible. The candidate performs for an algorithm they cannot see or question.", verdict: "Proprietary. Invisible. No recourse." },
+  { key: "Candidate-Side Tools", num: "04", description: "<strong>LazyApply</strong> submits 150–750 applications per day while you sleep. Not transparency — tactical adaptation.", verdict: "Gaming the system, commercially. The gap remains." },
+  { key: "Curated Marketplaces", num: "05", description: "<strong>Toptal</strong> restricts access to a claimed \'top 3%\' — the platform is the gatekeeper. Criteria opaque. Rejection carries no explanation.", verdict: "Access controlled. Criteria hidden. Challenge impossible." },
+];
+
+let s13OpenTag = null;
+let s13OpenDetail = null;
+
+function s13Build() {
+  const container = document.getElementById('s13-categories');
+  if (!container) return;
+
+  s13Categories.forEach(cat => {
+    const items = s13Platforms.filter(p => p.type === cat.key);
+    const block = document.createElement('div');
+    block.className = 's13-category';
+
+    const detail = document.createElement('div');
+    detail.style.cssText = 'display:none;margin-top:12px;padding:16px 20px;background:white;border:1px solid #e0e0d8;font-family:var(--mono);font-size:11px;color:#555;line-height:1.6;position:relative;';
+
+    const tagsHtml = items.map(p => `<button class="s13-tag" onclick="s13ShowDetail(this, \'${p.name}\', \'${p.use_case}\', \'${p.pricing}\')">${p.name}</button>`).join('');
+
+    block.innerHTML = `
+      <div class="s13-cat-left">
+        <div class="s13-cat-num">Category ${cat.num}</div>
+        <div class="s13-cat-name">${cat.key}</div>
+        <div class="s13-cat-count">${items.length} platforms mapped</div>
+      </div>
+      <div class="s13-cat-right">
+        <div class="s13-cat-example">${cat.description}</div>
+        <div class="s13-cat-verdict">${cat.verdict}</div>
+        <div class="s13-tags">${tagsHtml}</div>
+      </div>`;
+
+    container.appendChild(block);
+  });
+}
+
+function s13ShowDetail(btn, name, useCase, pricing) {
+  // Close previous
+  document.querySelectorAll('.s13-tag').forEach(t => t.style.background = '');
+
+  // Find or create detail block near this tag
+  const tagsDiv = btn.closest('.s13-tags');
+  let detail = tagsDiv.nextElementSibling;
+  if (!detail || !detail.classList.contains('s13-detail-block')) {
+    detail = document.createElement('div');
+    detail.className = 's13-detail-block';
+    detail.style.cssText = 'margin-top:12px;padding:16px 20px;background:white;border:1px solid #e0e0d8;font-family:var(--mono);font-size:11px;color:#555;line-height:1.8;';
+    tagsDiv.after(detail);
+  }
+
+  btn.style.background = '#f0efe9';
+  detail.innerHTML = `<strong style="color:#1a1a1a;font-size:12px;">${name}</strong><br>${useCase}<br><span style="color:#bbb;">${pricing}</span>`;
+}
+
+document.addEventListener('DOMContentLoaded', s13Build);
+
+
+
+// ─── Layer 2: Portal Logic ───
+
+let l2GapValue = '';
+let portalData = null;
+let s03DisputeCount = 0;
+let s03DisputeAdded = {};
+let currentScreen = 0;
+
+function l2SelectRadio(el, val) {
+  el.closest('.l2-radio-group').querySelectorAll('.l2-radio-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('l2-gap').value = val === 'gap-yes' ? 'Yes' : 'No';
+}
+
+function l2GenerateProfile(title, level, degree, years, gap) {
+  // Smart local generation based on inputs
+  const yr = parseFloat(years) || 0;
+  const hasGap = gap === 'Yes';
+  const isEntry = level === 'Entry level';
+  const isSenior = level === 'Senior';
+
+  // Score logic: base + modifiers
+  let score = 58;
+  if (yr >= 3) score += 8;
+  if (yr >= 5) score += 6;
+  if (yr < 2) score -= 8;
+  if (hasGap) score -= 5;
+  if (isSenior && yr < 5) score -= 6;
+  if (isEntry && yr < 2) score += 4;
+  score = Math.min(82, Math.max(44, score + Math.floor(Math.random() * 8) - 3));
+
+  const threshold = 70 + Math.floor(Math.random() * 6);
+
+  // Keywords by field
+  const fieldLower = degree.toLowerCase();
+  const titleLower = title.toLowerCase();
+
+  let matchedKW = [], missedKW = [];
+
+  if (fieldLower.includes('design') || titleLower.includes('design') || titleLower.includes('ux') || titleLower.includes('ui')) {
+    matchedKW = ['Figma', 'UX Research', 'Prototyping', 'User Testing'];
+    missedKW = ['Design Systems', 'Motion Design', 'Adobe Illustrator'];
+  } else if (fieldLower.includes('market') || titleLower.includes('market')) {
+    matchedKW = ['Campaign Management', 'Content Strategy', 'Analytics'];
+    missedKW = ['SEO', 'Paid Media', 'Marketing Automation'];
+  } else if (fieldLower.includes('engineer') || titleLower.includes('engineer') || titleLower.includes('develop')) {
+    matchedKW = ['Python', 'Git', 'Agile', 'API Integration'];
+    missedKW = ['Kubernetes', 'CI/CD', 'TypeScript'];
+  } else if (fieldLower.includes('data') || titleLower.includes('data') || titleLower.includes('analyst')) {
+    matchedKW = ['Data Analysis', 'SQL', 'Excel', 'Reporting'];
+    missedKW = ['Tableau', 'Power BI', 'Machine Learning'];
+  } else if (fieldLower.includes('communication') || fieldLower.includes('media')) {
+    matchedKW = ['Content Creation', 'Storytelling', 'Brand Communication'];
+    missedKW = ['SEO Copywriting', 'Social Media Strategy', 'Adobe Suite'];
+  } else {
+    matchedKW = ['Project Management', 'Communication', 'Microsoft Office'];
+    missedKW = ['Stakeholder Management', 'Budget Planning', 'CRM Systems'];
+  }
+
+  // Experience threshold
+  const requiredYears = isEntry ? 1 : isSenior ? 5 : 3;
+  const expPassed = yr >= requiredYears;
+  const expGap = (requiredYears - yr).toFixed(1);
+
+  // Classification label — cold, clinical, like a real ATS tag
+  let classificationParts = [];
+  classificationParts.push(level + ' candidate');
+  if (yr < requiredYears) classificationParts.push('Experience below threshold');
+  if (hasGap) classificationParts.push('Employment gap flagged');
+  const matchRate = Math.round((matchedKW.length / (matchedKW.length + missedKW.length)) * 100);
+  classificationParts.push('Keyword match: ' + matchRate + '%');
+  const classification = classificationParts.join('. ') + '.';
+
+  // Missed items
+  const missedItems = [
+    { title: 'Freelance and independent project work', desc: 'Work listed outside formal employment fields was not counted toward total experience. The parser only recognised standard employment entries.' },
+    { title: `Skills described with different terminology`, desc: `"${matchedKW[0]}" terminology variants were not recognised as equivalent. The system matches exact strings — it does not interpret meaning or synonyms.` },
+    { title: 'Portfolio and attached work samples', desc: 'PDF attachments and external portfolio links were not parsed. Any evidence of competency in non-text format was invisible to the algorithm.' },
+  ];
+
+  if (hasGap) {
+    missedItems.push({ title: 'Context behind career gap', desc: 'Career gaps are flagged automatically. The reason — retraining, caregiving, health, freelance — is not evaluated.' });
+  }
+
+  // Contestable items
+  const contestable = [];
+  if (!expPassed) {
+    contestable.push({ title: 'Experience threshold applied as a rigid rule', desc: `${expGap} years below threshold. Applied automatically, no human judgment about quality or relevance of experience.` });
+  }
+  if (hasGap) {
+    contestable.push({ title: 'Career gap penalised without context', desc: 'Gap flagged and scored negatively. The reason behind the gap was not evaluated.' });
+  }
+  contestable.push({ title: 'Relevant experience not recognised by the parser', desc: 'Independent or freelance work not counted. This is a parsing limitation, not a qualification gap.' });
+  contestable.push({ title: 'Score generated under low system confidence', desc: 'Profile & Identity category flagged as low confidence. A decision partially based on uncertain output is a candidate for human review.' });
+  contestable.push({ title: 'Decision made solely by automated processing', desc: 'No human reviewed this application. Under GDPR Art. 22, you have the right to request intervention on this basis alone.' });
+
+  return {
+    score,
+    threshold,
+    classification,
+    keywords: {
+      matched: matchedKW,
+      missed: missedKW,
+      confidence: yr >= 3 ? 'Medium' : 'Low',
+      desc: 'Kortex extracted terms from your CV and compared them against the exact keywords listed in the job description. Synonyms and related terms were not recognised.',
+      wtm: 'The system compares exact words. A skill described differently than the job listing — even if it refers to the same competency — receives no credit.'
+    },
+    experience: {
+      found: `${yr} year${yr !== 1 ? 's' : ''} of relevant experience`,
+      issue: expPassed ? `Meets required threshold of ${requiredYears} years` : `Required threshold: ${requiredYears} years minimum. Shortfall: ${expGap} years.`,
+      confidence: 'High',
+      desc: 'Kortex calculated total years of relevant experience and applied a fixed minimum threshold. The calculation does not account for the nature or depth of experience.',
+      rigid_rule: expPassed ? null : `The system applied a fixed ${requiredYears}-year threshold with no tolerance. ${yr} years does not satisfy "at least ${requiredYears} years" — regardless of the quality or relevance of that experience.`,
+      wtm: expPassed ? 'Your experience met the required threshold.' : `This is the category where a rigid algorithmic rule produced a result that may not reflect your actual qualifications.`,
+      freelance_invisible: true
+    },
+    education: {
+      match: fieldLower.length > 2 ? 'Partial match' : 'No match',
+      not_evaluated: ['Thesis topic and academic projects', 'Relevant coursework', 'Academic awards or distinctions'],
+      confidence: 'High',
+      desc: 'Kortex evaluated degree field and level against the job description requirements.',
+      wtm: 'Content beyond the degree title — coursework, thesis, academic projects — was not evaluated.'
+    },
+    profile: {
+      matched: ['Collaborative', 'Results-oriented'],
+      missed: ['Proactive (different phrasing used)', 'Strategic thinker (not in CV text)', 'Fast-paced environment (implied, not stated)'],
+      confidence: 'Low',
+      desc: 'Kortex scanned for soft skill descriptors and personality language. This is the category with the lowest system confidence.',
+      note: 'This category is where the system is least reliable. Soft skills and contextual language are poorly suited to keyword matching. The score here reflects linguistic proximity, not actual fit.',
+      wtm: 'The gap between what you wrote and what was required may be a difference in language, not in who you are.'
+    },
+    missed_items: missedItems,
+    contestable_items: contestable
+  };
+}
+
+function l2Submit() {
+
+  const title = document.getElementById('l2-title').value.trim();
+  const level = document.getElementById('l2-level').value;
+  const degree = document.getElementById('l2-degree').value.trim();
+  const years = document.getElementById('l2-years').value;
+  const gap = document.getElementById('l2-gap').value || 'No';
+
+  // Hide form, show loading
+  document.getElementById('input-form').style.display = 'none';
+  document.getElementById('l2-loading').style.display = 'block';
+
+  // Simulate processing time
+  setTimeout(() => {
+    const data = l2GenerateProfile(title, level, degree, years, gap);
+    data.userTitle = title;
+    data.userLevel = level;
+    data.userDegree = degree;
+    data.userYears = years;
+    data.userGap = gap;
+    portalData = data;
+
+    document.getElementById('l2-loading').style.display = 'none';
+    populatePortal(data);
+    document.getElementById('portal').style.display = 'block';
+    portalGo(0);
+    l3UpdateClassification();
+  }, 2200);
+}
+
+function populatePortal(d) {
+  const ref = 'KX-' + Date.now().toString().slice(-8);
+
+  // Header
+  document.getElementById('portal-ref').textContent = ref;
+
+  // Screen 01
+  document.getElementById('s01-name').textContent = d.userTitle;
+  document.getElementById('s01-role').textContent = d.userLevel + ' · ' + d.userDegree;
+  document.getElementById('s01-score').textContent = d.score;
+  document.getElementById('s01-bar-fill').style.width = d.score + '%';
+  document.getElementById('s01-bar-thresh').style.right = (100 - d.threshold) + '%';
+  document.getElementById('s01-verdict').textContent = d.score >= d.threshold
+    ? 'You met the required threshold.'
+    : 'Required to proceed: ' + d.threshold + '. You did not meet the threshold.';
+  document.getElementById('s01-footer').textContent = 'Decision generated in milliseconds · Ref ' + ref;
+
+  // Screen 02 mini score
+  document.getElementById('s02-score-mini').textContent = d.score + '/100';
+  document.getElementById('s02-bar-fill').style.width = d.score + '%';
+  document.getElementById('s02-bar-thresh').style.right = (100 - d.threshold) + '%';
+  document.getElementById('s02-verdict-mini').textContent = 'Required: ' + d.threshold;
+
+  // Status dots
+  const dotColors = { High: '#2a6e4a', Medium: '#7a6020', Low: '#8b3a2a' };
+  ['keywords','experience','education','profile'].forEach(cat => {
+    const conf = cat === 'keywords' ? d.keywords.confidence
+      : cat === 'experience' ? d.experience.confidence
+      : cat === 'education' ? d.education.confidence
+      : 'Low';
+    const dot = document.getElementById('s02-dot-' + cat);
+    if (dot) dot.style.background = dotColors[conf] || '#555';
+  });
+
+  // Keywords panel
+  document.getElementById('s02-kw-desc').textContent = d.keywords.desc;
+  setConfBadge('s02-kw-conf', d.keywords.confidence);
+  document.getElementById('s02-kw-matched').innerHTML = d.keywords.matched.map(k =>
+    `<div class="s02-item"><div class="s02-item-dot"></div>${k}</div>`).join('');
+  document.getElementById('s02-kw-missed').innerHTML = d.keywords.missed.map(k =>
+    `<div class="s02-item"><div class="s02-item-dot"></div>${k}</div>`).join('');
+  document.getElementById('s02-kw-wtm').textContent = d.keywords.wtm;
+
+  // Experience panel
+  document.getElementById('s02-exp-desc').textContent = d.experience.desc;
+  setConfBadge('s02-exp-conf', d.experience.confidence);
+  document.getElementById('s02-exp-matched').innerHTML =
+    `<div class="s02-item"><div class="s02-item-dot"></div>${d.experience.found}</div>`;
+  document.getElementById('s02-exp-missed').innerHTML =
+    `<div class="s02-item"><div class="s02-item-dot"></div>${d.experience.issue}</div>`;
+  if (d.experience.rigid_rule) {
+    document.getElementById('s02-exp-note').style.display = 'block';
+    document.getElementById('s02-exp-note-text').textContent = d.experience.rigid_rule;
+  }
+  document.getElementById('s02-exp-wtm').textContent = d.experience.wtm;
+
+  // Education panel
+  document.getElementById('s02-edu-desc').textContent = d.education.desc;
+  setConfBadge('s02-edu-conf', d.education.confidence);
+  document.getElementById('s02-edu-matched').innerHTML =
+    `<div class="s02-item"><div class="s02-item-dot"></div>Degree field: ${d.userDegree} — ${d.education.match}</div>`;
+  document.getElementById('s02-edu-missed').innerHTML = d.education.not_evaluated.map(k =>
+    `<div class="s02-item"><div class="s02-item-dot"></div>${k}</div>`).join('');
+  document.getElementById('s02-edu-wtm').textContent = d.education.wtm;
+
+  // Profile panel
+  document.getElementById('s02-prof-desc').textContent = d.profile.desc;
+  setConfBadge('s02-prof-conf', 'Low');
+  document.getElementById('s02-prof-matched').innerHTML = d.profile.matched.map(k =>
+    `<div class="s02-item"><div class="s02-item-dot"></div>${k}</div>`).join('');
+  document.getElementById('s02-prof-missed').innerHTML = d.profile.missed.map(k =>
+    `<div class="s02-item"><div class="s02-item-dot"></div>${k}</div>`).join('');
+  document.getElementById('s02-prof-note').textContent = d.profile.note;
+  document.getElementById('s02-prof-wtm').textContent = d.profile.wtm;
+
+  // Screen 03 eval summary
+  const expResult = d.score >= d.threshold ? 'ok' : 'fail';
+  document.getElementById('s03-eval-kw').textContent = d.keywords.matched.length + ' of ' + (d.keywords.matched.length + d.keywords.missed.length) + ' keywords matched';
+  document.getElementById('s03-eval-kw').className = 's03-eval-result';
+  document.getElementById('s03-eval-exp').textContent = d.experience.found;
+  document.getElementById('s03-eval-exp').className = 's03-eval-result ' + expResult;
+  document.getElementById('s03-eval-edu').textContent = d.education.match;
+  document.getElementById('s03-eval-edu').className = 's03-eval-result ok';
+  document.getElementById('s03-eval-prof').textContent = 'Partial match — low confidence';
+  document.getElementById('s03-eval-prof').className = 's03-eval-result uncertain';
+
+  // Screen 03 missed items
+  document.getElementById('s03-missed-list').innerHTML = d.missed_items.map(item =>
+    `<div class="s03-missed-item"><div class="s03-missed-title">${item.title}</div><div class="s03-missed-desc">${item.desc}</div></div>`
+  ).join('');
+
+  // Screen 03 contestable items
+  s03DisputeCount = 0;
+  s03DisputeAdded = {};
+  document.getElementById('s03-contestable-list').innerHTML = d.contestable_items.map((item, i) =>
+    `<div class="s03-contestable-item" id="s03-ci-${i}">
+      <div>
+        <div class="s03-contestable-title">${item.title}</div>
+        <div class="s03-contestable-desc">${item.desc}</div>
+      </div>
+      <button class="s03-add-btn" id="s03-btn-${i}" onclick="s03AddItem(${i}, '${item.title.replace(/'/g, "\'")}')">+ Add to dispute</button>
+    </div>`
+  ).join('');
+
+  // Screen 04
+  document.getElementById('s04-role').textContent = d.userTitle;
+  document.getElementById('s04-ref').textContent = ref;
+  document.getElementById('s04-conf-ref').textContent = 'Reference: ' + ref + '-D';
+}
+
+function setConfBadge(id, conf) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = conf;
+  el.className = 's02-conf-badge ' + (conf === 'High' ? 'conf-high' : conf === 'Medium' ? 'conf-medium' : 'conf-low');
+}
+
+function portalGo(screen) {
+  document.querySelectorAll('.portal-screen').forEach((s, i) => {
+    s.classList.toggle('active', i === screen);
+  });
+  document.querySelectorAll('.portal-bc-item').forEach((b, i) => {
+    b.classList.toggle('active', i === screen);
+  });
+  currentScreen = screen;
+  // Only scroll to keep portal header in view, not back to top
+  const portalEl = document.getElementById('portal');
+  const portalTop = portalEl.offsetTop - 52;
+  if (window.scrollY < portalTop) {
+    window.scrollTo({ top: portalTop, behavior: 'smooth' });
+  }
+}
+
+function s02ShowCat(id, el) {
+  document.querySelectorAll('.s02-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.s02-cat-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('s02-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+function s03AddItem(i, title) {
+  if (s03DisputeAdded[i]) return;
+  s03DisputeAdded[i] = true;
+  s03DisputeCount++;
+
+  const btn = document.getElementById('s03-btn-' + i);
+  const item = document.getElementById('s03-ci-' + i);
+  if (btn) { btn.textContent = 'Added ✓'; btn.classList.add('added'); }
+  if (item) item.classList.add('added');
+
+  const counter = document.getElementById('s03-counter');
+  counter.textContent = s03DisputeCount + (s03DisputeCount === 1 ? ' item added' : ' items added');
+  counter.classList.add('has-items');
+
+  // Enable proceed button
+  const proceedBtn = document.getElementById('s03-proceed-btn');
+  if (proceedBtn) proceedBtn.classList.remove('disabled');
+
+  // Update Screen 04 case items
+  const addedTitles = Object.keys(s03DisputeAdded).map(idx => {
+    const el = document.querySelector('#s03-ci-' + idx + ' .s03-contestable-title');
+    return el ? el.textContent : '';
+  }).filter(Boolean);
+
+  document.getElementById('s04-case-items').innerHTML = addedTitles.map(t =>
+    `<div class="s04-case-item"><div class="s04-case-check">✓</div><div class="s04-case-text">${t}</div></div>`
+  ).join('');
+}
+
+function s04Submit() {
+  document.getElementById('s04-form-content').style.display = 'none';
+  document.getElementById('s04-confirmation').classList.add('visible');
+  window.scrollTo({ top: document.getElementById('portal').offsetTop - 52, behavior: 'smooth' });
+}
+
+
+// ─── Layer 3: Update classification when portal is populated ───
+function l3UpdateClassification() {
+  if (!portalData) return;
+  const el = document.getElementById('l3-classification');
+  if (el) {
+    el.textContent = portalData.classification || '—';
+    el.classList.add('loaded');
+  }
+}
+
+function l3Restart() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Watch for portal data to update Layer 3
+const l3Observer = new MutationObserver(() => {
+  if (portalData) l3UpdateClassification();
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const portal = document.getElementById('portal');
+  if (portal) l3Observer.observe(portal, { attributes: true, attributeFilter: ['style'] });
+});
+
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+</script>
+
+</body>
+</html>
