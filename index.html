@@ -5,26 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Transparent Rejection</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
 
   /* ─── Reset ─── */
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   /* ─── Design tokens ─── */
   :root {
-    --bg-light:    #f5f4f0;
+    --bg-light:    #ffffff;
     --bg-dark:     #0f0f0f;
     --surface:     #161616;
     --border:      #2a2a2a;
-    --border-light: #e0e0d8;
-    --text-dark:   #1a1a1a;
-    --text-light:  #e8e6e0;
+    --border-light: #e8e8e8;
+    --text-dark:   #0a0a0a;
+    --text-light:  #f0f0f0;
     --text-dim:    #999;
     --text-dimmer: #666;
-    --accent:      #4a7aae;
+    --accent:      #1a1a1a;
     --mono:        'IBM Plex Mono', monospace;
     --sans:        'IBM Plex Sans', sans-serif;
-    --display:     'Syne', sans-serif;
+    --display:     'IBM Plex Sans', sans-serif;
   }
 
   /* ─── Base ─── */
@@ -32,10 +32,12 @@
 
   body {
     font-family: var(--sans);
-    font-weight: 300;
+    font-weight: 400;
+    font-size: 18px;
     background: var(--bg-light);
     color: var(--text-dark);
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 
   /* ─── Navigation ─── */
@@ -48,11 +50,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 40px;
-    height: 52px;
+    padding: 0 32px;
+    height: 44px;
     background: var(--bg-light);
     border-bottom: 1px solid var(--border-light);
-    transition: background 0.4s, border-color 0.4s;
+    transition: background 0.3s, border-color 0.3s;
   }
 
   nav.dark {
@@ -61,12 +63,13 @@
   }
 
   .nav-title {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-family: var(--sans);
+    font-size: 13px;
+    letter-spacing: 0;
     color: var(--text-dark);
-    transition: color 0.4s;
+    transition: color 0.3s;
+    font-weight: 500;
+    text-transform: none;
   }
 
   nav.dark .nav-title { color: var(--text-light); }
@@ -74,37 +77,34 @@
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 28px;
     list-style: none;
   }
 
   .nav-links a {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-family: var(--sans);
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
     color: var(--text-dim);
     text-decoration: none;
     transition: color 0.2s;
+    font-weight: 400;
   }
 
   .nav-links a:hover { color: var(--text-dark); }
   nav.dark .nav-links a:hover { color: var(--text-light); }
-  .nav-links a.active { color: var(--text-dark); }
+  .nav-links a.active { color: var(--text-dark); font-weight: 500; }
   nav.dark .nav-links a.active { color: var(--text-light); }
 
   /* ─── Section base ─── */
-  .section {
-    position: relative;
-  }
+  .section { position: relative; }
 
-  /* Light sections */
   .section-light {
     background: var(--bg-light);
     color: var(--text-dark);
   }
 
-  /* Dark sections */
   .section-dark {
     background: var(--bg-dark);
     color: var(--text-light);
@@ -112,61 +112,48 @@
 
   /* ─── Section containers ─── */
   #hero          { min-height: 100vh; }
-  #layer1        { }
-  #section-11    { }
-  #section-12    { }
-  #section-13    { }
-  #section-14    { }
-  #transition    { min-height: 60vh; }
-  #layer2        { }
-  #input-form    { }
-  #portal        { }
+  #transition    { min-height: 50vh; }
   #layer3        { min-height: 80vh; }
 
   /* ─── Typography helpers ─── */
   .section-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0;
+    text-transform: none;
     color: var(--text-dim);
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     display: block;
+    font-weight: 400;
   }
 
   .section-title {
-    font-family: var(--display);
-    font-size: clamp(28px, 3vw, 42px);
+    font-family: var(--sans);
+    font-size: clamp(40px, 5vw, 72px);
     font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-    margin-bottom: 16px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    color: var(--text-dark);
   }
 
   .section-intro {
-    font-size: 16px;
-    line-height: 1.75;
-    color: var(--text-dim);
-    max-width: 600px;
+    font-size: clamp(18px, 1.8vw, 24px);
+    line-height: 1.6;
+    color: #444;
+    max-width: 680px;
+    font-family: var(--sans);
+    font-weight: 400;
   }
 
   /* ─── Dividers ─── */
-  .divider {
-    width: 100%;
-    height: 1px;
-    background: var(--border-light);
-  }
-
-  .divider-dark {
-    width: 100%;
-    height: 1px;
-    background: var(--border);
-  }
+  .divider { width: 100%; height: 1px; background: var(--border-light); }
+  .divider-dark { width: 100%; height: 1px; background: var(--border); }
 
   /* ─── Scroll progress indicator ─── */
   .progress-bar {
     position: fixed;
-    top: 52px;
+    top: 44px;
     left: 0;
     height: 2px;
     background: var(--text-dark);
@@ -175,7 +162,6 @@
     transition: width 0.1s linear;
   }
 
-  /* ─── Placeholder content (to be replaced) ─── */
   .placeholder {
     display: flex;
     align-items: center;
@@ -183,15 +169,12 @@
     min-height: 200px;
     border: 1px dashed var(--border-light);
     margin: 40px;
-    font-family: var(--mono);
-    font-size: 12px;
+    font-family: var(--sans);
+    font-size: 13px;
     color: var(--text-dim);
-    letter-spacing: 0.06em;
   }
 
-  .section-dark .placeholder {
-    border-color: var(--border);
-  }
+  .section-dark .placeholder { border-color: var(--border); }
 
 </style>
 </head>
@@ -199,162 +182,140 @@
 
 <!-- ─── Navigation ─── -->
 <nav id="main-nav">
-  <div class="nav-title">The Transparent Rejection</div>
+  <div class="nav-title" onclick="showPage('home')" style="cursor:pointer">The Transparent Rejection</div>
   <ul class="nav-links">
-    <li><a href="#hero" class="active">Overview</a></li>
-    <li><a href="#layer1">The Problem</a></li>
-    <li><a href="#layer2">The Proposal</a></li>
-    <li><a href="#layer3">The Reflection</a></li>
-    <li><a href="#references">References</a></li>
+    <li><a href="#" onclick="showPage('research');return false;" data-page="research">Research</a></li>
+    <li><a href="#" onclick="showPage('prototype');return false;" data-page="prototype">Prototype</a></li>
+    <li><a href="#" onclick="showPage('about');return false;" data-page="about">About</a></li>
   </ul>
 </nav>
 
 <!-- ─── Scroll progress ─── -->
 <div class="progress-bar" id="progress-bar"></div>
 
+<!-- ─── PAGE: Home ─── -->
+<div id="page-home" class="page">
+
 <!-- ─── Hero ─── -->
 <section id="hero" class="section section-light">
   <style>
     #hero {
+      min-height: 100vh;
+    }
+
+    .hero-panel {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      padding: 120px 80px 80px;
-      min-height: 100vh;
+      justify-content: flex-end;
+      padding: 44px 32px 56px;
       position: relative;
+      border-bottom: 1px solid var(--border-light);
     }
 
     .hero-label {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
+      font-family: var(--sans);
+      font-size: 13px;
       color: var(--text-dim);
-      margin-bottom: 32px;
+      font-weight: 400;
+      position: absolute;
+      top: 56px;
+      left: 32px;
     }
 
     .hero-title {
-      font-family: var(--display);
-      font-size: clamp(48px, 7vw, 96px);
-      font-weight: 800;
-      line-height: 1.0;
+      font-family: var(--sans);
+      font-size: clamp(72px, 11vw, 160px);
+      font-weight: 700;
+      line-height: 0.92;
       letter-spacing: -0.03em;
       color: var(--text-dark);
-      max-width: 900px;
-      margin-bottom: 40px;
     }
 
-    .hero-intro {
-      font-size: 18px;
-      line-height: 1.8;
-      color: #555;
-      max-width: 580px;
-      margin-bottom: 16px;
-      font-family: var(--sans);
-      font-weight: 300;
-    }
-
-    .hero-research {
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--text-dim);
-      letter-spacing: 0.04em;
-      margin-bottom: 56px;
-    }
-
-    .hero-research span {
+    .hero-paragraph {
+      font-size: clamp(28px, 3.5vw, 52px);
+      line-height: 1.25;
       color: var(--text-dark);
+      font-family: var(--sans);
+      font-weight: 400;
+      max-width: 1100px;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-last-panel {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 44px 32px 56px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .hero-data {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border-light);
+      padding-top: 20px;
+    }
+
+    .hero-data span {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--text-dim);
+      font-weight: 400;
     }
 
     .hero-start {
       display: inline-flex;
       align-items: center;
-      gap: 12px;
-      font-family: var(--mono);
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      gap: 10px;
+      font-family: var(--sans);
+      font-size: 16px;
       color: var(--text-dark);
       text-decoration: none;
-      border-bottom: 1px solid var(--text-dark);
-      padding-bottom: 4px;
+      font-weight: 500;
       transition: gap 0.2s;
     }
 
-    .hero-start:hover { gap: 20px; }
-
-    .hero-bottom {
-      position: absolute;
-      bottom: 40px;
-      left: 80px;
-      right: 80px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-
-    .hero-meta {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 0.06em;
-      line-height: 1.8;
-    }
-
-    .hero-scroll {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      animation: bounce 2s ease-in-out infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(6px); }
-    }
+    .hero-start:hover { gap: 18px; }
   </style>
 
-  <div class="hero-label">A research and design project</div>
-
-  <h1 class="hero-title">The Transparent Rejection</h1>
-
-  <p class="hero-intro">
-    If you've applied for a job recently, there's a good chance a computer screened your application before any human saw it.
-  </p>
-
-  <p class="hero-intro">
-    This project maps how automated hiring systems work, how candidates experience them, and what a fairer alternative could look like. By the end, you will see exactly how one of these systems would read you.
-  </p>
-
-  <div class="hero-research">
-    Built from real research —
-    <span>100 candidate testimonies</span>,
-    <span>50 job descriptions</span>,
-    <span>52 hiring platforms</span>.
+  <!-- Panel 1: Title -->
+  <div class="hero-panel">
+    <div class="hero-label">Research & design project</div>
+    <h1 class="hero-title">The Transparent<br>Rejection</h1>
   </div>
 
-  <a href="#layer1" class="hero-start">
-    Start
-    <span>→</span>
-  </a>
+  <!-- Panel 2: First paragraph -->
+  <div class="hero-panel">
+    <p class="hero-paragraph">
+      Every day, automated systems reject job candidates with no explanation. Two laws require one. No platform provides it.
+    </p>
+  </div>
 
-  <div class="hero-bottom">
-    <div class="hero-meta">
-      Politecnico di Milano · Communication Design · Master's Thesis · 2026<br>
-      Supervisor: Prof. Beatrice Gobbo<br>
-      <span style="color:#bbb;margin-top:4px;display:block;font-size:9px;letter-spacing:0.08em">Keywords: algorithmic hiring · explainable AI · procedural fairness · EU AI Act · communication design</span>
+  <!-- Panel 3: Second paragraph + explore -->
+  <div class="hero-last-panel">
+    <p class="hero-paragraph">
+      This project maps how algorithmic hiring systems work, documents how candidates experience them, and proposes a candidate-facing interface that makes automated decisions legible and contestable. By the end, you will see exactly how one of these systems would read you.
+    </p>
+    <div class="hero-data">
+      <span>100 candidate testimonies</span>
+      <span>52 hiring platforms mapped</span>
+      <span>50 job descriptions analysed</span>
     </div>
-    <div class="hero-scroll">
-      Scroll ↓
-    </div>
+    <a href="#" onclick="showPage('research');return false;" class="hero-start">
+      Explore →
+    </a>
   </div>
 
 </section>
+
+</div><!-- end page-home -->
+
+<!-- ─── PAGE: Research ─── -->
+<div id="page-research" class="page" style="display:none">
 
 <!-- ─── Layer 1: The Problem ─── -->
 <section id="layer1" class="section section-light">
@@ -362,15 +323,15 @@
   <div id="section-11" class="section section-light">
     <style>
       #section-11 {
-        padding: 120px 80px;
+        padding: 80px 32px;
         border-top: 1px solid var(--border-light);
       }
 
       .s11-header {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 80px;
-        margin-bottom: 80px;
+        gap: 60px;
+        margin-bottom: 60px;
         align-items: start;
       }
 
@@ -386,7 +347,7 @@
       .s11-step:last-child { border-bottom: 1px solid var(--border-light); }
 
       .s11-step-num {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 11px;
         color: var(--text-dim);
         letter-spacing: 0.1em;
@@ -413,9 +374,9 @@
       .s11-finding {
         margin-top: 16px;
         padding: 14px 18px;
-        background: #f0efe9;
+        background: #f5f5f5;
         border-left: 2px solid var(--text-dark);
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 12px;
         color: var(--text-dark);
         letter-spacing: 0.02em;
@@ -435,7 +396,7 @@
       }
 
       .s11-tax-label {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 10px;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -454,7 +415,7 @@
         margin-top: 48px;
         padding-top: 16px;
         border-top: 1px solid var(--border-light);
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 10px;
         color: var(--text-dim);
         line-height: 1.7;
@@ -464,11 +425,11 @@
 
     <div class="s11-header">
       <div>
-        <span class="section-label">1.1 — How the system works</span>
-        <h2 class="section-title">A computer compares words. It is not reading you.</h2>
+        <span class="section-label">01 — How it works</span>
+        <h2 class="section-title">The algorithm does not know you. It only knows your keywords.</h2>
       </div>
       <div class="section-intro">
-        An Applicant Tracking System receives your CV as plain text. It extracts keywords and compares them against the job description using cosine similarity — a mathematical measure of word overlap. The higher the overlap, the higher your score. The lower your score, the faster you are eliminated.
+        Before a human ever sees your application, software has already decided what to do with it. It scans your CV for keywords, compares them to the job description, and generates a score. If your score is too low, your application is discarded. The whole process takes milliseconds.
       </div>
     </div>
 
@@ -586,7 +547,7 @@
         }
 
         .s11-interactive .score-sub {
-          font-family: var(--mono);
+          font-family: var(--sans);
           font-size: 11px;
           color: var(--text-dim);
           margin-top: 6px;
@@ -611,7 +572,7 @@
           display: flex;
           align-items: center;
           gap: 10px;
-          font-family: var(--mono);
+          font-family: var(--sans);
           font-size: 11px;
           color: #555;
         }
@@ -633,8 +594,8 @@
         }
 
         .s11-interactive .s11-btn {
-          font-family: var(--mono);
-          font-size: 11px;
+          font-family: var(--sans);
+          font-size: 12px;
           letter-spacing: 0.06em;
           color: var(--text-dark);
           background: transparent;
@@ -646,7 +607,7 @@
 
         .s11-interactive .s11-btn:hover {
           border-color: var(--text-dark);
-          background: #f0efe9;
+          background: #f5f5f5;
         }
 
         .s11-interactive .s11-btn:disabled {
@@ -669,23 +630,23 @@
         .s11-interactive .finding-bar {
           margin-top: 32px;
           padding: 16px 20px;
-          background: #f0efe9;
+          background: #f5f5f5;
           border-left: 2px solid var(--text-dark);
-          font-family: var(--mono);
-          font-size: 12px;
+          font-family: var(--sans);
+          font-size: 13px;
           color: var(--text-dark);
-          letter-spacing: 0.02em;
           line-height: 1.6;
         }
 
         .s11-interactive .s11-footnote {
-          font-family: var(--mono);
-          font-size: 10px;
+          font-family: var(--sans);
+          font-size: 12px;
           color: var(--text-dim);
           margin-top: 24px;
           padding-top: 16px;
           border-top: 1px solid var(--border-light);
           line-height: 1.7;
+          font-weight: 300;
         }
       </style>
 
@@ -746,7 +707,7 @@
   <div id="section-12" class="section section-light">
     <style>
       #section-12 {
-        padding: 120px 80px;
+        padding: 80px 32px;
         border-top: 1px solid var(--border-light);
       }
 
@@ -767,17 +728,18 @@
       }
 
       .s12-filter-label {
-        font-family: var(--mono);
-        font-size: 10px;
-        letter-spacing: 0.1em;
+        font-family: var(--sans);
+        font-size: 11px;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
         color: var(--text-dim);
         margin-right: 4px;
+        font-weight: 400;
       }
 
       .s12-filter-btn {
-        font-family: var(--mono);
-        font-size: 11px;
+        font-family: var(--sans);
+        font-size: 12px;
         padding: 6px 12px;
         border: 1px solid var(--border-light);
         background: white;
@@ -798,7 +760,7 @@
       .s12-filter-btn[data-theme="Instant rejection"].active { background: #533AB7; }
 
       .s12-count-bar {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 12px;
         color: var(--text-dim);
         margin-bottom: 24px;
@@ -842,9 +804,10 @@
       }
 
       .s12-card-sub {
-        font-family: var(--mono);
-        font-size: 10px;
+        font-family: var(--sans);
+        font-size: 11px;
         color: #bbb;
+        font-weight: 300;
       }
 
       .s12-card-meta { display: flex; align-items: center; gap: 5px; }
@@ -886,7 +849,7 @@
 
       .s12-modal-close {
         position: absolute; top: 16px; right: 16px;
-        font-family: var(--mono); font-size: 11px; color: #bbb;
+        font-family: var(--sans); font-size: 11px; color: #bbb;
         cursor: pointer; background: none; border: none;
       }
 
@@ -897,7 +860,7 @@
       }
 
       .s12-modal-theme-tag {
-        font-family: var(--mono); font-size: 10px;
+        font-family: var(--sans); font-size: 10px;
         padding: 3px 8px; border-radius: 2px; color: white;
       }
 
@@ -921,17 +884,17 @@
       }
 
       .s12-modal-footer {
-        font-family: var(--mono); font-size: 11px; color: #888;
+        font-family: var(--sans); font-size: 11px; color: #888;
       }
     </style>
 
     <div class="s12-header">
       <div>
-        <span class="section-label">1.2 — Digital ethnography</span>
+        <span class="section-label">02 — What candidates say</span>
         <h2 class="section-title">What candidates say about it.</h2>
       </div>
       <div class="section-intro">
-        100 comments from r/RecruitingHell, r/jobs, r/csMajors and others. Not a chart — real voices, real frustration, real tactics. Filter by theme to see the pattern underneath. Click any card to read more.
+        100 comments from r/RecruitingHell, r/jobs, r/csMajors. Filter by theme. Click any card to read the full post.
       </div>
     </div>
 
@@ -965,7 +928,7 @@
   <div id="section-13" class="section section-light">
     <style>
       #section-13 {
-        padding: 120px 80px;
+        padding: 80px 32px;
         border-top: 1px solid var(--border-light);
       }
 
@@ -991,7 +954,7 @@
       .s13-cat-left {}
 
       .s13-cat-num {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 10px;
         letter-spacing: 0.12em;
         text-transform: uppercase;
@@ -1000,7 +963,7 @@
       }
 
       .s13-cat-name {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 13px;
         font-weight: bold;
         color: var(--text-dark);
@@ -1009,7 +972,7 @@
       }
 
       .s13-cat-count {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 10px;
         color: var(--text-dim);
       }
@@ -1029,7 +992,7 @@
       }
 
       .s13-cat-verdict {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 11px;
         color: var(--text-dim);
         letter-spacing: 0.02em;
@@ -1043,7 +1006,7 @@
       }
 
       .s13-tag {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 11px;
         padding: 5px 10px;
         background: white;
@@ -1064,7 +1027,7 @@
       }
 
       .s13-gap-label {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 10px;
         letter-spacing: 0.15em;
         text-transform: uppercase;
@@ -1084,7 +1047,7 @@
 
       .s13-gap-sub {
         margin-top: 12px;
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 12px;
         color: #555;
       }
@@ -1092,11 +1055,11 @@
 
     <div class="s13-header">
       <div>
-        <span class="section-label">1.3 — Mapping existing platforms</span>
+        <span class="section-label">03 — Platform landscape</span>
         <h2 class="section-title">What currently exists.</h2>
       </div>
       <div class="section-intro">
-        52 commercial platforms mapped across five categories. Employer-side tools everywhere. Candidate-side tools that teach gaming. Nothing that gives candidates a transparent explanation of what happened — or a legitimate way to challenge it.
+        52 commercial hiring platforms mapped across five categories. The gap is consistent across all of them.
       </div>
     </div>
 
@@ -1113,7 +1076,7 @@
   <div id="section-14" class="section section-light">
     <style>
       #section-14 {
-        padding: 120px 80px;
+        padding: 80px 32px;
         border-top: 1px solid var(--border-light);
       }
 
@@ -1139,13 +1102,14 @@
       }
 
       .s14-law-name {
-        font-family: var(--mono);
-        font-size: 11px; letter-spacing: 0.1em;
+        font-family: var(--sans);
+        font-size: 11px; letter-spacing: 0.08em;
         text-transform: uppercase; color: #888;
+        font-weight: 400;
       }
 
       .s14-law-status {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 10px; color: white;
         background: var(--text-dark);
         padding: 2px 8px; border-radius: 1px;
@@ -1169,7 +1133,7 @@
       }
 
       .s14-transition-label {
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 10px; letter-spacing: 0.15em;
         text-transform: uppercase; color: #555;
         margin-bottom: 16px;
@@ -1184,18 +1148,18 @@
 
       .s14-transition-arrow {
         margin-top: 24px;
-        font-family: var(--mono);
+        font-family: var(--sans);
         font-size: 12px; color: #555;
       }
     </style>
 
     <div class="s14-header">
       <div>
-        <span class="section-label">1.4 — The legal framework</span>
+        <span class="section-label">04 — Legal framework</span>
         <h2 class="section-title">The right exists. The design doesn't.</h2>
       </div>
       <div class="section-intro">
-        Two laws. Both in force. Neither being fulfilled by any commercial hiring platform.
+        Two laws. Both in force. Neither fulfilled by any commercial hiring platform.
       </div>
     </div>
 
@@ -1232,18 +1196,19 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 120px 80px;
+      padding: 80px 32px;
       text-align: center;
       border-top: 1px solid var(--border-light);
     }
 
     .transition-pre {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-dim);
       margin-bottom: 32px;
+      font-weight: 400;
     }
 
     .transition-statement {
@@ -1258,9 +1223,9 @@
     }
 
     .transition-arrow {
-      font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: 0.1em;
+      font-family: var(--sans);
+      font-size: 13px;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--text-dim);
       text-decoration: none;
@@ -1268,16 +1233,22 @@
       align-items: center;
       gap: 12px;
       transition: gap 0.2s;
+      font-weight: 400;
     }
 
     .transition-arrow:hover { gap: 20px; color: var(--text-dark); }
   </style>
 
-  <div class="transition-pre">You have seen the problem.</div>
-  <div class="transition-statement">Here is what could have been different.</div>
-  <a href="#layer2" class="transition-arrow">See the proposal <span>→</span></a>
+  <div class="transition-pre">Research complete.</div>
+  <div class="transition-statement">Here is what a transparent rejection could look like.</div>
+  <a href="#" onclick="showPage('prototype');return false;" class="transition-arrow">See the prototype <span>→</span></a>
 
 </section>
+
+</div><!-- end page-research -->
+
+<!-- ─── PAGE: Prototype ─── -->
+<div id="page-prototype" class="page" style="display:none">
 
 <!-- ─── Layer 2: The Proposal ─── -->
 <section id="layer2" class="section section-dark">
@@ -1286,7 +1257,7 @@
 
     /* ─── Input form ─── */
     #input-form {
-      padding: 120px 80px;
+      padding: 80px 32px;
       border-top: 1px solid #2a2a2a;
     }
 
@@ -1309,7 +1280,7 @@
     }
 
     .l2-form-intro {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #666;
       line-height: 1.8;
@@ -1333,7 +1304,7 @@
     .l2-field.full { grid-column: 1 / -1; }
 
     .l2-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -1360,7 +1331,7 @@
       background: #161616;
       border: 1px solid #2a2a2a;
       color: var(--text-light);
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       letter-spacing: 0.04em;
       padding: 14px 18px;
@@ -1386,7 +1357,7 @@
       background: #161616;
       border: 1px solid #2a2a2a;
       color: #666;
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       letter-spacing: 0.06em;
       cursor: pointer;
@@ -1423,7 +1394,7 @@
     .l2-submit:disabled { background: #2a2a2a; color: #555; cursor: default; }
 
     .l2-submit-note {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       color: #444;
       letter-spacing: 0.04em;
@@ -1438,7 +1409,7 @@
     }
 
     .l2-loading-text {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 13px;
       color: #555;
       letter-spacing: 0.1em;
@@ -1486,7 +1457,7 @@
     .portal-logo span { color: #555; }
 
     .portal-header-right {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       color: #555;
       letter-spacing: 0.08em;
@@ -1504,7 +1475,7 @@
     }
 
     .portal-bc-item {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -1531,7 +1502,7 @@
     }
 
     .portal-nav-left {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       color: #444;
       letter-spacing: 0.06em;
@@ -1540,7 +1511,7 @@
     .portal-nav-btns { display: flex; gap: 12px; }
 
     .portal-btn {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       letter-spacing: 0.06em;
       padding: 8px 20px;
@@ -1584,7 +1555,7 @@
     }
 
     .s01-candidate-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -1603,14 +1574,14 @@
     }
 
     .s01-role {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 13px;
       color: #888;
       margin-bottom: 4px;
     }
 
     .s01-company {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 13px;
       color: #555;
     }
@@ -1618,7 +1589,7 @@
     .s01-score-block { margin-top: 48px; }
 
     .s01-score-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -1676,7 +1647,7 @@
     }
 
     .s01-verdict {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #555;
       letter-spacing: 0.04em;
@@ -1690,7 +1661,7 @@
     }
 
     .s01-notice-text {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #888;
       line-height: 1.7;
@@ -1699,7 +1670,7 @@
     .s01-notice-text strong { color: var(--text-light); font-weight: 500; }
 
     .s01-pathways-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -1722,7 +1693,7 @@
     .s01-pathway:last-child { margin-bottom: 0; }
 
     .s01-pathway-num {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       color: #555;
       flex-shrink: 0;
@@ -1738,14 +1709,14 @@
     }
 
     .s01-pathway-desc {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #555;
       line-height: 1.6;
     }
 
     .s01-pathway-arrow {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 16px;
       color: #555;
       flex-shrink: 0;
@@ -1780,7 +1751,7 @@
     }
 
     .s02-sidebar-sub {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #555;
       line-height: 1.6;
@@ -1793,7 +1764,7 @@
     }
 
     .s02-score-mini-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -1821,7 +1792,7 @@
     .s02-score-mini-thresh { position: absolute; right: 0; top: -4px; height: 11px; width: 1px; background: #c0392b; }
 
     .s02-score-mini-verdict {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       color: #c0392b;
     }
@@ -1829,7 +1800,7 @@
     .s02-cat-nav { display: flex; flex-direction: column; gap: 2px; }
 
     .s02-cat-nav-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -1852,7 +1823,7 @@
     .s02-cat-item.active { border-color: #333; background: #161616; }
 
     .s02-cat-item-name {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #666;
     }
@@ -1888,7 +1859,7 @@
     }
 
     .s02-panel-desc {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #555;
       line-height: 1.6;
@@ -1902,7 +1873,7 @@
     }
 
     .s02-conf-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -1972,7 +1943,7 @@
     }
 
     .s02-note-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -1981,7 +1952,7 @@
     }
 
     .s02-note-text {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #666;
       line-height: 1.7;
@@ -1994,7 +1965,7 @@
     }
 
     .s02-wtm-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -2027,7 +1998,7 @@
     }
 
     .s03-page-sub {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #555;
       line-height: 1.7;
@@ -2038,7 +2009,7 @@
     .s03-section { margin-bottom: 64px; }
 
     .s03-section-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
@@ -2069,14 +2040,14 @@
     }
 
     .s03-eval-name {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #555;
       margin-bottom: 6px;
     }
 
     .s03-eval-result {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #666;
     }
@@ -2110,7 +2081,7 @@
     }
 
     .s03-contest-note {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #444;
       line-height: 1.7;
@@ -2149,7 +2120,7 @@
     }
 
     .s03-add-btn {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       letter-spacing: 0.06em;
       padding: 10px 16px;
@@ -2165,7 +2136,7 @@
     .s03-add-btn.added { border-color: #2a5aae; background: #2a5aae; color: white; cursor: default; }
 
     .s03-dispute-counter {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       padding: 6px 14px;
       border: 1px solid #1a3a6e;
@@ -2193,7 +2164,7 @@
     }
 
     .s04-page-sub {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #555;
       line-height: 1.7;
@@ -2209,7 +2180,7 @@
     }
 
     .s04-rights-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -2228,7 +2199,7 @@
     .s04-rights-text strong { color: var(--text-light); font-weight: 400; }
 
     .s04-case-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -2247,10 +2218,10 @@
       background: #090f1f;
     }
 
-    .s04-case-check { font-family: var(--mono); font-size: 12px; color: #6a9aee; flex-shrink: 0; }
+    .s04-case-check { font-family: var(--sans); font-size: 12px; color: #6a9aee; flex-shrink: 0; }
 
     .s04-case-text {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #666;
       line-height: 1.5;
@@ -2270,7 +2241,7 @@
     }
 
     .s04-info-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -2279,13 +2250,13 @@
     }
 
     .s04-info-value {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #666;
     }
 
     .s04-statement-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -2294,7 +2265,7 @@
     }
 
     .s04-statement-hint {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #444;
       margin-bottom: 12px;
@@ -2323,7 +2294,7 @@
     .s04-submit-block { padding-top: 32px; border-top: 1px solid #2a2a2a; }
 
     .s04-submit-note {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #444;
       line-height: 1.7;
@@ -2364,7 +2335,7 @@
     }
 
     .s04-conf-sub {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #555;
       line-height: 1.8;
@@ -2373,7 +2344,7 @@
     }
 
     .s04-conf-ref {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #444;
       padding: 12px 24px;
@@ -2385,12 +2356,12 @@
   <div id="input-form">
     <div class="l2-form-header">
       <div>
-        <span class="section-label" style="color:#444">The Proposal</span>
-        <h2 class="l2-form-title">See how the system<br>would read you.</h2>
+        <span class="section-label" style="color:#444">Prototype</span>
+        <h2 class="l2-form-title">Enter your profile.<br>See how the system reads you.</h2>
       </div>
       <div class="l2-form-intro">
-        You have just seen how automated hiring systems work, what candidates experience, and what the law requires. Now enter a few details about yourself — and see exactly how an algorithm would classify your profile.<br><br>
-        <span style="color:#555">This is a designed simulation based on documented ATS behaviour. It uses the same evaluation logic — keyword matching, experience thresholds, gap detection — described in the research above. No data you enter is stored or transmitted.</span>
+        A simulation built on documented ATS behaviour. The same logic — keyword matching, experience thresholds, gap detection — used by commercial hiring platforms today.<br><br>
+        <span style="color:#555">No data is stored or transmitted.</span>
       </div>
     </div>
 
@@ -2806,14 +2777,14 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 120px 80px;
+      padding: 80px 32px;
       border-top: 1px solid #2a2a2a;
       text-align: center;
       position: relative;
     }
 
     .l3-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
@@ -2822,7 +2793,7 @@
     }
 
     .l3-pre {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -2870,7 +2841,7 @@
     }
 
     .l3-closing {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 12px;
       color: #444;
       letter-spacing: 0.06em;
@@ -2889,7 +2860,7 @@
     }
 
     .l3-bottom-left {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       color: #333;
       letter-spacing: 0.06em;
@@ -2897,7 +2868,7 @@
     }
 
     .l3-restart {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -2928,7 +2899,7 @@
   </div>
 
   <div class="l3-closing">
-    This interface proposes a standard that currently exists nowhere in practice — transparent, specific, contestable. A legal obligation. A design problem. A solvable one.
+    This interface exists nowhere in practice. It is a legal obligation — and a design problem.
   </div>
 
   <div class="l3-bottom">
@@ -2936,12 +2907,15 @@
       The Transparent Rejection · Politecnico di Milano<br>
       Communication Design · Supervisor: Prof. Beatrice Gobbo · 2026
     </div>
-    <div class="l3-restart" onclick="l3Restart()">↑ Start again</div>
+    <div class="l3-restart" onclick="showPage('home')">↑ Start again</div>
   </div>
 
 </section>
 
-<!-- ─── References ─── -->
+</div><!-- end page-prototype -->
+
+<!-- ─── PAGE: About ─── -->
+<div id="page-about" class="page" style="display:none">
 <section id="references" class="section section-light">
   <style>
     #references {
@@ -2965,7 +2939,7 @@
     }
 
     .ref-methodology-title {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
@@ -2994,7 +2968,7 @@
     }
 
     .ref-group-label {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
@@ -3006,7 +2980,7 @@
 
     .ref-item {
       padding: 14px 0;
-      border-bottom: 1px solid #f0efe9;
+      border-bottom: 1px solid #f5f5f5;
       font-size: 13px;
       line-height: 1.75;
       color: #333;
@@ -3022,7 +2996,7 @@
     }
 
     .ref-item-year {
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 11px;
       color: #bbb;
       margin-left: 4px;
@@ -3041,7 +3015,7 @@
 
     .ref-item-type {
       display: inline-block;
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -3055,7 +3029,7 @@
       margin-top: 48px;
       padding-top: 24px;
       border-top: 1px solid var(--border-light);
-      font-family: var(--mono);
+      font-family: var(--sans);
       font-size: 10px;
       color: var(--text-dim);
       letter-spacing: 0.04em;
@@ -3065,11 +3039,11 @@
 
   <div class="ref-header">
     <div>
-      <span class="section-label">Research foundations</span>
-      <h2 class="section-title">References &amp; Methodology</h2>
+      <span class="section-label">About the project</span>
+      <h2 class="section-title">Research & methodology</h2>
     </div>
     <div class="section-intro">
-      This project is grounded in peer-reviewed literature, regulatory frameworks, and primary research conducted between 2024–2026. The design decisions in the prototype are each traceable to a specific academic source.
+      Three strands of primary research. One design proposal. Built at Politecnico di Milano, Communication Design, 2026. Supervisor: Prof. Beatrice Gobbo.
     </div>
   </div>
 
@@ -3179,54 +3153,43 @@
     This site was built as the primary design output of the thesis. Interactive elements simulate documented ATS behaviour for research purposes only.
   </div>
 
-</section> scroll behavior ─── -->
+</section>
+
+</div><!-- end page-about -->
+
 <script>
-  const nav = document.getElementById('main-nav');
-  const progressBar = document.getElementById('progress-bar');
-  const navLinks = document.querySelectorAll('.nav-links a');
+  // ─── Page switching ───
+  const pages = ['home', 'research', 'prototype', 'about'];
 
-  const sections = {
-    hero: document.getElementById('hero'),
-    layer1: document.getElementById('layer1'),
-    layer2: document.getElementById('layer2'),
-    layer3: document.getElementById('layer3'),
-    references: document.getElementById('references'),
-  };
+  function showPage(name) {
+    pages.forEach(p => {
+      const el = document.getElementById('page-' + p);
+      if (el) el.style.display = 'none';
+    });
 
-  function updateNav() {
-    const scrollY = window.scrollY;
-    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const target = document.getElementById('page-' + name);
+    if (target) target.style.display = 'block';
 
-    // Progress bar
-    progressBar.style.width = (scrollY / docHeight * 100) + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Dark nav when in dark sections
-    const layer2Top = sections.layer2.offsetTop;
-    if (scrollY >= layer2Top - 60) {
-      nav.classList.add('dark');
-      progressBar.style.background = '#e8e6e0';
-    } else {
-      nav.classList.remove('dark');
-      progressBar.style.background = '#1a1a1a';
-    }
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.classList.toggle('active', a.dataset.page === name);
+    });
 
-    // Active nav link
-    navLinks.forEach(link => link.classList.remove('active'));
+    const nav = document.getElementById('main-nav');
+    nav.classList.toggle('dark', name === 'prototype');
 
-    if (sections.references && scrollY >= sections.references.offsetTop - 100) {
-      document.querySelector('a[href="#references"]').classList.add('active');
-    } else if (scrollY >= sections.layer3.offsetTop - 100) {
-      document.querySelector('a[href="#layer3"]').classList.add('active');
-    } else if (scrollY >= sections.layer2.offsetTop - 100) {
-      document.querySelector('a[href="#layer2"]').classList.add('active');
-    } else if (scrollY >= sections.layer1.offsetTop - 100) {
-      document.querySelector('a[href="#layer1"]').classList.add('active');
-    } else {
-      document.querySelector('a[href="#hero"]').classList.add('active');
-    }
+    document.getElementById('progress-bar').style.width = '0%';
   }
 
-  
+  // Progress bar on scroll
+  window.addEventListener('scroll', () => {
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (window.scrollY / docHeight * 100) : 0;
+    document.getElementById('progress-bar').style.width = progress + '%';
+  }, { passive: true });
+
+
 // ─── Section 1.2 Reddit Grid ───
 const IMAGE_DATA = {};
 
@@ -3332,9 +3295,9 @@ function s12CloseModal(e) {
   const s11JdFade = ['s11j1','s11j2','s11j3','s11j4','s11j9','s11j10','s11j11','s11j13','s11j15'];
   const s11Descs = [
     'Your CV enters the system as plain text. The algorithm does not read it. It scans it.',
-    'The system extracts keywords — specific words it can match against a job description. Everything else becomes invisible.',
-    'The job description also yields a list of keywords. The system now has two lists of words.',
-    "The lists are compared. Words that match raise your score. Words that don't — including context, nuance, synonyms — do not exist to the system."
+    'The system extracts keywords to match against the job description. Everything else becomes invisible.',
+    'The job description does the same. Now the system has two lists of words.',
+    "The lists are compared. Words that match raise your score. Everything else — context, nuance, synonyms — does not exist to the system."
   ];
 
   function s11Reset() {
@@ -3440,7 +3403,7 @@ function s13ShowDetail(btn, name, useCase, pricing) {
     tagsDiv.after(detail);
   }
 
-  btn.style.background = '#f0efe9';
+  btn.style.background = '#f5f5f5';
   detail.innerHTML = `<strong style="color:#1a1a1a;font-size:12px;">${name}</strong><br>${useCase}<br><span style="color:#bbb;">${pricing}</span>`;
 }
 
@@ -3813,8 +3776,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (portal) l3Observer.observe(portal, { attributes: true, attributeFilter: ['style'] });
 });
 
-  window.addEventListener('scroll', updateNav, { passive: true });
-  updateNav();
+// Build the reddit grid on first visit to research page
+document.addEventListener('DOMContentLoaded', () => {
+  s12BuildGrid();
+});
 </script>
 
 </body>
