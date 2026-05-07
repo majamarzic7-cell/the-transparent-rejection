@@ -69,7 +69,6 @@
     color: var(--text-dark);
     transition: color 0.3s;
     font-weight: 500;
-    text-transform: none;
   }
 
   nav.dark .nav-title { color: var(--text-light); }
@@ -85,7 +84,6 @@
     font-family: var(--sans);
     font-size: 13px;
     letter-spacing: 0;
-    text-transform: none;
     color: var(--text-dim);
     text-decoration: none;
     transition: color 0.2s;
@@ -200,17 +198,19 @@
 <section id="hero" class="section section-light">
   <style>
     #hero {
-      min-height: 100vh;
+      position: relative;
+      height: 400vh;
     }
 
-    .hero-panel {
-      min-height: 100vh;
+    .hero-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 44px 32px 56px;
-      position: relative;
-      border-bottom: 1px solid var(--border-light);
+      padding: 44px 32px 64px;
+      overflow: hidden;
     }
 
     .hero-label {
@@ -221,6 +221,23 @@
       position: absolute;
       top: 56px;
       left: 32px;
+    }
+
+    .hero-slide {
+      position: absolute;
+      bottom: 64px;
+      left: 32px;
+      right: 32px;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      pointer-events: none;
+    }
+
+    .hero-slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .hero-title {
@@ -242,31 +259,6 @@
       letter-spacing: -0.01em;
     }
 
-    .hero-last-panel {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 44px 32px 56px;
-      border-bottom: 1px solid var(--border-light);
-    }
-
-    .hero-data {
-      display: flex;
-      gap: 40px;
-      margin-bottom: 48px;
-      flex-wrap: wrap;
-      border-top: 1px solid var(--border-light);
-      padding-top: 20px;
-    }
-
-    .hero-data span {
-      font-family: var(--sans);
-      font-size: 13px;
-      color: var(--text-dim);
-      font-weight: 400;
-    }
-
     .hero-start {
       display: inline-flex;
       align-items: center;
@@ -277,38 +269,102 @@
       text-decoration: none;
       font-weight: 500;
       transition: gap 0.2s;
+      margin-top: 40px;
     }
 
     .hero-start:hover { gap: 18px; }
+
+    .hero-progress {
+      position: absolute;
+      bottom: 64px;
+      right: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .hero-progress-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--border-light);
+      transition: background 0.3s;
+    }
+
+    .hero-progress-dot.active {
+      background: var(--text-dark);
+    }
   </style>
 
-  <!-- Panel 1: Title -->
-  <div class="hero-panel">
-    <div class="hero-label">Research & design project</div>
-    <h1 class="hero-title">The Transparent<br>Rejection</h1>
-  </div>
+  <div class="hero-sticky">
+    <div class="hero-label" style="display:none">Research & design project</div>
 
-  <!-- Panel 2: First paragraph -->
-  <div class="hero-panel">
-    <p class="hero-paragraph">
-      Every day, automated systems reject job candidates with no explanation. Two laws require one. No platform provides it.
-    </p>
-  </div>
-
-  <!-- Panel 3: Second paragraph + explore -->
-  <div class="hero-last-panel">
-    <p class="hero-paragraph">
-      This project maps how algorithmic hiring systems work, documents how candidates experience them, and proposes a candidate-facing interface that makes automated decisions legible and contestable. By the end, you will see exactly how one of these systems would read you.
-    </p>
-    <div class="hero-data">
-      <span>100 candidate testimonies</span>
-      <span>52 hiring platforms mapped</span>
-      <span>50 job descriptions analysed</span>
+    <!-- Slide 0: Title -->
+    <div class="hero-slide active" id="hero-slide-0">
+      <h1 class="hero-title">The Transparent<br>Rejection</h1>
     </div>
-    <a href="#" onclick="showPage('research');return false;" class="hero-start">
-      Explore →
-    </a>
+
+    <!-- Slide 1: First paragraph -->
+    <div class="hero-slide" id="hero-slide-1">
+      <p class="hero-paragraph">
+        Every day, automated systems reject job candidates without explanation.
+      </p>
+    </div>
+
+    <!-- Slide 2: Second paragraph -->
+    <div class="hero-slide" id="hero-slide-2">
+      <p class="hero-paragraph">
+        This project looks at how those systems work, what it feels like to be on the receiving end, and what a fairer alternative could look like.
+      </p>
+    </div>
+
+    <!-- Slide 3: Third paragraph + explore -->
+    <div class="hero-slide" id="hero-slide-3">
+      <p class="hero-paragraph">
+        Built from 100 candidate testimonies, 50 job descriptions, and 52 hiring platforms. By the end, you will see exactly how one of these systems would read you.
+      </p>
+      <a href="#" onclick="showPage('research');return false;" class="hero-start">
+        Explore →
+      </a>
+    </div>
+
+    <!-- Progress dots -->
+    <div class="hero-progress">
+      <div class="hero-progress-dot active" id="hdot-0"></div>
+      <div class="hero-progress-dot" id="hdot-1"></div>
+      <div class="hero-progress-dot" id="hdot-2"></div>
+      <div class="hero-progress-dot" id="hdot-3"></div>
+    </div>
   </div>
+
+  <script>
+    (function() {
+      const totalSlides = 4;
+
+      function updateHeroSlide() {
+        const hero = document.getElementById('hero');
+        if (!hero) return;
+        const scrolled = window.scrollY - hero.offsetTop;
+        const sectionHeight = hero.offsetHeight - window.innerHeight;
+        const progress = Math.max(0, Math.min(1, scrolled / sectionHeight));
+        const slideIndex = Math.min(totalSlides - 1, Math.floor(progress * totalSlides));
+
+        for (let i = 0; i < totalSlides; i++) {
+          const slide = document.getElementById('hero-slide-' + i);
+          const dot = document.getElementById('hdot-' + i);
+          if (slide) slide.classList.toggle('active', i === slideIndex);
+          if (dot) dot.classList.toggle('active', i === slideIndex);
+        }
+      }
+
+      window.addEventListener('scroll', updateHeroSlide, { passive: true });
+      updateHeroSlide();
+    })();
+  </script>
+
+</section>
+
+</div><!-- end page-home -->
 
 </section>
 
@@ -322,18 +378,60 @@
 
   <div id="section-11" class="section section-light">
     <style>
-      #section-11 {
-        padding: 80px 32px;
-        border-top: 1px solid var(--border-light);
+      #section-11 { border-top: 1px solid var(--border-light); }
+
+      .s11-scroll-container { position: relative; height: 400vh; }
+
+      .s11-sticky {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 44px 32px 64px;
+        overflow: hidden;
+        background: var(--bg-light);
       }
 
-      .s11-header {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 60px;
-        margin-bottom: 60px;
-        align-items: start;
+      .s11-scroll-label {
+        position: absolute;
+        top: 56px;
+        left: 32px;
+        font-family: var(--sans);
+        font-size: 13px;
+        color: var(--text-dim);
+        font-weight: 400;
       }
+
+      .s11-scroll-slide {
+        position: absolute;
+        bottom: 64px;
+        left: 32px;
+        right: 32px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        pointer-events: none;
+      }
+
+      .s11-scroll-slide.active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .s11-scroll-text {
+        font-size: clamp(24px, 3vw, 44px);
+        line-height: 1.25;
+        color: var(--text-dark);
+        font-family: var(--sans);
+        font-weight: 400;
+        max-width: 960px;
+        letter-spacing: -0.01em;
+      }
+
+      .s11-interactive-wrap { padding: 80px 32px; border-top: 1px solid var(--border-light); display: flex; flex-direction: column; align-items: center; text-align: center; }
 
       .s11-step {
         display: grid;
@@ -345,101 +443,61 @@
       }
 
       .s11-step:last-child { border-bottom: 1px solid var(--border-light); }
-
-      .s11-step-num {
-        font-family: var(--sans);
-        font-size: 11px;
-        color: var(--text-dim);
-        letter-spacing: 0.1em;
-        padding-top: 4px;
-      }
-
-      .s11-step-content {}
-
-      .s11-step-title {
-        font-family: var(--display);
-        font-size: 22px;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: var(--text-dark);
-      }
-
-      .s11-step-text {
-        font-size: 15px;
-        line-height: 1.75;
-        color: #555;
-        max-width: 560px;
-      }
-
-      .s11-finding {
-        margin-top: 16px;
-        padding: 14px 18px;
-        background: #f5f5f5;
-        border-left: 2px solid var(--text-dark);
-        font-family: var(--sans);
-        font-size: 12px;
-        color: var(--text-dark);
-        letter-spacing: 0.02em;
-      }
-
-      .s11-taxonomy {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2px;
-        margin-top: 16px;
-        background: var(--border-light);
-      }
-
-      .s11-tax-cell {
-        background: var(--bg-light);
-        padding: 20px;
-      }
-
-      .s11-tax-label {
-        font-family: var(--sans);
-        font-size: 10px;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--text-dim);
-        margin-bottom: 6px;
-      }
-
-      .s11-tax-examples {
-        font-size: 13px;
-        color: #555;
-        line-height: 1.6;
-        font-style: italic;
-      }
-
-      .s11-footnote {
-        margin-top: 48px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-light);
-        font-family: var(--sans);
-        font-size: 10px;
-        color: var(--text-dim);
-        line-height: 1.7;
-        max-width: 640px;
-      }
+      .s11-step-num { font-family: var(--sans); font-size: 11px; color: var(--text-dim); padding-top: 4px; }
+      .s11-step-title { font-family: var(--sans); font-size: 22px; font-weight: 600; margin-bottom: 10px; color: var(--text-dark); }
+      .s11-step-text { font-size: 15px; line-height: 1.75; color: #555; max-width: 560px; }
+      .s11-finding { margin-top: 16px; padding: 14px 18px; background: #f5f5f5; border-left: 2px solid var(--text-dark); font-family: var(--sans); font-size: 12px; color: var(--text-dark); }
+      .s11-taxonomy { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 16px; background: var(--border-light); }
+      .s11-tax-cell { background: var(--bg-light); padding: 20px; }
+      .s11-tax-label { font-family: var(--sans); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+      .s11-tax-examples { font-size: 13px; color: #555; line-height: 1.6; font-style: italic; }
+      .s11-footnote { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border-light); font-family: var(--sans); font-size: 13px; color: var(--text-dim); line-height: 1.7; max-width: 640px; font-weight: 300; }
     </style>
 
-    <div class="s11-header">
-      <div>
-        <span class="section-label">01 — How it works</span>
-        <h2 class="section-title">The algorithm does not know you. It only knows your keywords.</h2>
-      </div>
-      <div class="section-intro">
-        Before a human ever sees your application, software has already decided what to do with it. It scans your CV for keywords, compares them to the job description, and generates a score. If your score is too low, your application is discarded. The whole process takes milliseconds.
+    <!-- Scrollytelling intro -->
+    <div class="s11-scroll-container" id="s11-scroll-container">
+      <div class="s11-sticky">
+        <div class="s11-scroll-label">01 — How it works</div>
+        <div class="s11-scroll-slide active" id="s11-scroll-0">
+          <p class="s11-scroll-text">Before a human ever sees your application, software has already decided what to do with it.</p>
+        </div>
+        <div class="s11-scroll-slide" id="s11-scroll-1">
+          <p class="s11-scroll-text">It scans your CV for keywords, compares them to the job description, and generates a score.</p>
+        </div>
+        <div class="s11-scroll-slide" id="s11-scroll-2">
+          <p class="s11-scroll-text">If your score is too low, your application is discarded. The whole process takes milliseconds.</p>
+        </div>
       </div>
     </div>
 
-    <!-- Interactive keyword matching explainer -->
-    <div class="s11-interactive" style="max-width:780px;">
+    <script>
+    (function() {
+      function updateS11() {
+        const c = document.getElementById('s11-scroll-container');
+        if (!c) return;
+        const scrolled = window.scrollY - c.offsetTop;
+        const h = c.offsetHeight - window.innerHeight;
+        const p = Math.max(0, Math.min(1, scrolled / h));
+        const idx = Math.min(2, Math.floor(p * 3));
+        for (let i = 0; i < 3; i++) {
+          const el = document.getElementById('s11-scroll-' + i);
+          if (el) el.classList.toggle('active', i === idx);
+        }
+      }
+      window.addEventListener('scroll', updateS11, { passive: true });
+      updateS11();
+    })();
+    </script>
+
+    <!-- Interactive part -->
+    <div class="s11-interactive-wrap">
+    <div class="s11-interactive" style="max-width:780px; width:100%; text-align:center;">
       <style>
         /* Section 1.1 interactive — aligned with site design system */
         .s11-interactive {
           padding: 40px 0;
           margin-top: 48px;
+          text-align: center;
         }
 
         .s11-interactive .step-desc {
@@ -451,6 +509,9 @@
           margin-bottom: 32px;
           font-weight: 300;
           max-width: 600px;
+          margin-left: auto;
+          margin-right: auto;
+          text-align: center;
         }
 
         .s11-interactive .columns {
@@ -647,6 +708,7 @@
           border-top: 1px solid var(--border-light);
           line-height: 1.7;
           font-weight: 300;
+          text-align: center;
         }
       </style>
 
@@ -701,6 +763,8 @@
         "Traditional Applicant Tracking Systems depend heavily on keyword-based filtering, they often overlook contextually relevant candidates." — Hepzibah et al., <em>Journal of Theoretical and Applied Information Technology</em>, 2025
       </div>
     </div>
+
+    </div><!-- end s11-interactive-wrap -->
 
   </div>
 
@@ -1066,9 +1130,7 @@
     <div id="s13-categories"></div>
 
     <div class="s13-gap">
-      <div class="s13-gap-label">The finding</div>
       <div class="s13-gap-statement">Not one of the 52 platforms provides candidates with a transparent, specific explanation of how an automated decision was made about them.</div>
-      <div class="s13-gap-sub">The gap is not subtle — it is total.</div>
     </div>
 
   </div>
@@ -1239,7 +1301,6 @@
     .transition-arrow:hover { gap: 20px; color: var(--text-dark); }
   </style>
 
-  <div class="transition-pre">Research complete.</div>
   <div class="transition-statement">Here is what a transparent rejection could look like.</div>
   <a href="#" onclick="showPage('prototype');return false;" class="transition-arrow">See the prototype <span>→</span></a>
 
@@ -2794,11 +2855,10 @@
 
     .l3-pre {
       font-family: var(--sans);
-      font-size: 12px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-size: clamp(20px, 2.5vw, 36px);
       color: #444;
       margin-bottom: 24px;
+      font-weight: 400;
     }
 
     .l3-classification {
@@ -2883,8 +2943,6 @@
     .l3-restart:hover { color: var(--text-light); border-color: var(--text-light); }
   </style>
 
-  <div class="l3-label">The Reflection</div>
-
   <div class="l3-pre">The automated system read you as</div>
 
   <div class="l3-classification" id="l3-classification">
@@ -2898,15 +2956,8 @@
     <em>But it is how you were read.</em>
   </div>
 
-  <div class="l3-closing">
-    This interface exists nowhere in practice. It is a legal obligation — and a design problem.
-  </div>
-
   <div class="l3-bottom">
-    <div class="l3-bottom-left">
-      The Transparent Rejection · Politecnico di Milano<br>
-      Communication Design · Supervisor: Prof. Beatrice Gobbo · 2026
-    </div>
+    <div></div>
     <div class="l3-restart" onclick="showPage('home')">↑ Start again</div>
   </div>
 
