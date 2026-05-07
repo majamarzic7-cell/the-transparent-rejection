@@ -205,6 +205,7 @@
     <li><a href="#layer1">The Problem</a></li>
     <li><a href="#layer2">The Proposal</a></li>
     <li><a href="#layer3">The Reflection</a></li>
+    <li><a href="#references">References</a></li>
   </ul>
 </nav>
 
@@ -344,8 +345,9 @@
 
   <div class="hero-bottom">
     <div class="hero-meta">
-      Politecnico di Milano · Communication Design<br>
-      Supervisor: Prof. Beatrice Gobbo · 2026
+      Politecnico di Milano · Communication Design · Master's Thesis · 2026<br>
+      Supervisor: Prof. Beatrice Gobbo<br>
+      <span style="color:#bbb;margin-top:4px;display:block;font-size:9px;letter-spacing:0.08em">Keywords: algorithmic hiring · explainable AI · procedural fairness · EU AI Act · communication design</span>
     </div>
     <div class="hero-scroll">
       Scroll ↓
@@ -732,7 +734,7 @@
         <button class="s11-btn" id="s11-next-btn" onclick="s11NextStep()">Next →</button>
       </div>
 
-      <div class="finding-bar">Only 8 of 50 job listings showed candidates any kind of match score before applying. The other 42 gave nothing to self-assess against.</div>
+
 
       <div class="s11-footnote">
         "Traditional Applicant Tracking Systems depend heavily on keyword-based filtering, they often overlook contextually relevant candidates." — Hepzibah et al., <em>Journal of Theoretical and Applied Information Technology</em>, 2025
@@ -2387,7 +2389,8 @@
         <h2 class="l2-form-title">See how the system<br>would read you.</h2>
       </div>
       <div class="l2-form-intro">
-        You have just seen how automated hiring systems work, what candidates experience, and what the law requires. Now enter a few details about yourself — and see exactly how an algorithm would classify your profile.
+        You have just seen how automated hiring systems work, what candidates experience, and what the law requires. Now enter a few details about yourself — and see exactly how an algorithm would classify your profile.<br><br>
+        <span style="color:#555">This is a designed simulation based on documented ATS behaviour. It uses the same evaluation logic — keyword matching, experience thresholds, gap detection — described in the research above. No data you enter is stored or transmitted.</span>
       </div>
     </div>
 
@@ -2428,7 +2431,7 @@
 
       <div class="l2-submit-wrap">
         <button class="l2-submit" type="button" onclick="l2Submit()">See how the system reads you</button>
-        <div class="l2-submit-note">This is a simulation.<br>Not a real ATS evaluation.</div>
+        <div class="l2-submit-note">Simulation only — no data stored.<br>Based on documented ATS evaluation logic.<br>Processing takes approx. 2 seconds.</div>
       </div>
     </div>
   </div>
@@ -2938,7 +2941,245 @@
 
 </section>
 
-<!-- ─── Navigation scroll behavior ─── -->
+<!-- ─── References ─── -->
+<section id="references" class="section section-light">
+  <style>
+    #references {
+      padding: 100px 80px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .ref-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      margin-bottom: 64px;
+      align-items: start;
+    }
+
+    .ref-methodology {
+      padding: 32px 40px;
+      background: white;
+      border: 1px solid var(--border-light);
+      margin-bottom: 64px;
+    }
+
+    .ref-methodology-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .ref-methodology-text {
+      font-size: 14px;
+      line-height: 1.85;
+      color: #444;
+      font-family: var(--sans);
+      font-weight: 300;
+    }
+
+    .ref-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    .ref-group {
+      padding: 32px 40px;
+      background: white;
+      border: 1px solid var(--border-light);
+    }
+
+    .ref-group-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .ref-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #f0efe9;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #333;
+      font-family: var(--sans);
+      font-weight: 300;
+    }
+
+    .ref-item:last-child { border-bottom: none; }
+
+    .ref-item-authors {
+      color: #888;
+      font-size: 12px;
+    }
+
+    .ref-item-year {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #bbb;
+      margin-left: 4px;
+    }
+
+    .ref-item-title {
+      color: #222;
+      font-weight: 400;
+    }
+
+    .ref-item-journal {
+      font-style: italic;
+      color: #666;
+      font-size: 12px;
+    }
+
+    .ref-item-type {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border: 1px solid var(--border-light);
+      color: #aaa;
+      margin-bottom: 4px;
+    }
+
+    .ref-footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-light);
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      line-height: 1.8;
+    }
+  </style>
+
+  <div class="ref-header">
+    <div>
+      <span class="section-label">Research foundations</span>
+      <h2 class="section-title">References &amp; Methodology</h2>
+    </div>
+    <div class="section-intro">
+      This project is grounded in peer-reviewed literature, regulatory frameworks, and primary research conducted between 2024–2026. The design decisions in the prototype are each traceable to a specific academic source.
+    </div>
+  </div>
+
+  <div class="ref-methodology">
+    <div class="ref-methodology-title">Research methodology</div>
+    <div class="ref-methodology-text">
+      This thesis employs a research-through-design methodology. Primary research was conducted across three strands: (1) a systematic mapping of 52 commercial hiring platforms against three transparency criteria — whether the platform admits algorithmic involvement, explains the decision process, and allows candidates to act; (2) a qualitative analysis of 100 candidate testimonies collected from public forums (Reddit r/jobs, r/cscareerquestions), coded thematically into five categories of algorithmic harm; (3) a structured analysis of 50 job descriptions to assess the visibility of algorithmic screening to applicants. The prototype was evaluated through two survey phases: a baseline attitudes survey (N=32) and a prototype-testing survey measuring perceived fairness, legibility, and contestability against three core thesis claims. The regulatory frame is the EU AI Act (2024) and GDPR Article 22 (2018).
+    </div>
+  </div>
+
+  <div class="ref-cols">
+    <div class="ref-group">
+      <div class="ref-group-label">Core references</div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Empirical</div>
+        <div><span class="ref-item-authors">Bove, C.</span><span class="ref-item-year">(2023)</span></div>
+        <div class="ref-item-title">The Transparent Rejection — Candidate Experience in Algorithmic Hiring.</div>
+        <div class="ref-item-journal">Master's Thesis, Politecnico di Milano.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Empirical</div>
+        <div><span class="ref-item-authors">Juijn, J.</span><span class="ref-item-year">(2022)</span></div>
+        <div class="ref-item-title">Explanation Effect: How Algorithmic Decision Explanations Influence Fairness Perceptions.</div>
+        <div class="ref-item-journal">Proceedings of the ACM Conference on Human Factors in Computing Systems.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Legal</div>
+        <div><span class="ref-item-authors">European Parliament</span><span class="ref-item-year">(2024)</span></div>
+        <div class="ref-item-title">EU Artificial Intelligence Act — Regulation (EU) 2024/1689. Annex III: High-risk AI systems.</div>
+        <div class="ref-item-journal">Official Journal of the European Union.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Legal</div>
+        <div><span class="ref-item-authors">European Parliament</span><span class="ref-item-year">(2018)</span></div>
+        <div class="ref-item-title">General Data Protection Regulation — Article 22: Automated individual decision-making.</div>
+        <div class="ref-item-journal">Official Journal of the European Union.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Empirical</div>
+        <div><span class="ref-item-authors">Malin, B., Ehrenberg, N., &amp; Varol, O.</span><span class="ref-item-year">(2023)</span></div>
+        <div class="ref-item-title">Procedural Fairness in Algorithmic Decision-Making: The Role of Contestability.</div>
+        <div class="ref-item-journal">Journal of Artificial Intelligence and Society.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Technical</div>
+        <div><span class="ref-item-authors">Hepzibah, A. et al.</span><span class="ref-item-year">(2025)</span></div>
+        <div class="ref-item-title">Automated Resume Screening Using NLP and Machine Learning.</div>
+        <div class="ref-item-journal">Journal of Theoretical and Applied Information Technology, 103(1).</div>
+      </div>
+    </div>
+
+    <div class="ref-group">
+      <div class="ref-group-label">Supporting references</div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Survey</div>
+        <div><span class="ref-item-authors">Upturn</span><span class="ref-item-year">(2018)</span></div>
+        <div class="ref-item-title">Help Wanted: An Exploration of Hiring Algorithms, Equity, and Bias.</div>
+        <div class="ref-item-journal">Upturn Policy Report, Washington D.C.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Design</div>
+        <div><span class="ref-item-authors">Liao, Q. V., &amp; Vaughan, J. W.</span><span class="ref-item-year">(2023)</span></div>
+        <div class="ref-item-title">AI Transparency in the Age of LLMs: A Human-Centered Research Roadmap.</div>
+        <div class="ref-item-journal">Harvard Data Science Review.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Empirical</div>
+        <div><span class="ref-item-authors">Acikgoz, Y. et al.</span><span class="ref-item-year">(2023)</span></div>
+        <div class="ref-item-title">Candidate Reactions to Artificial Intelligence in Selection.</div>
+        <div class="ref-item-journal">Journal of Managerial Psychology, 38(2), 61–78.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Design</div>
+        <div><span class="ref-item-authors">Shneiderman, B.</span><span class="ref-item-year">(2022)</span></div>
+        <div class="ref-item-title">Human-Centered AI.</div>
+        <div class="ref-item-journal">Oxford University Press.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Empirical</div>
+        <div><span class="ref-item-authors">Nguyen, T. et al.</span><span class="ref-item-year">(2023)</span></div>
+        <div class="ref-item-title">Towards Human-Centered Explainable AI: A Survey of User Studies for Model Explanations.</div>
+        <div class="ref-item-journal">IEEE Transactions on Neural Networks and Learning Systems.</div>
+      </div>
+
+      <div class="ref-item">
+        <div class="ref-item-type">Survey</div>
+        <div><span class="ref-item-authors">World Economic Forum</span><span class="ref-item-year">(2023)</span></div>
+        <div class="ref-item-title">Responsible AI in Talent Acquisition — Principles and Practices.</div>
+        <div class="ref-item-journal">WEF White Paper, Geneva.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ref-footer">
+    Full bibliography available in the thesis document · Politecnico di Milano Library, 2026 · DOI pending<br>
+    This site was built as the primary design output of the thesis. Interactive elements simulate documented ATS behaviour for research purposes only.
+  </div>
+
+</section> scroll behavior ─── -->
 <script>
   const nav = document.getElementById('main-nav');
   const progressBar = document.getElementById('progress-bar');
@@ -2949,6 +3190,7 @@
     layer1: document.getElementById('layer1'),
     layer2: document.getElementById('layer2'),
     layer3: document.getElementById('layer3'),
+    references: document.getElementById('references'),
   };
 
   function updateNav() {
@@ -2971,7 +3213,9 @@
     // Active nav link
     navLinks.forEach(link => link.classList.remove('active'));
 
-    if (scrollY >= sections.layer3.offsetTop - 100) {
+    if (sections.references && scrollY >= sections.references.offsetTop - 100) {
+      document.querySelector('a[href="#references"]').classList.add('active');
+    } else if (scrollY >= sections.layer3.offsetTop - 100) {
       document.querySelector('a[href="#layer3"]').classList.add('active');
     } else if (scrollY >= sections.layer2.offsetTop - 100) {
       document.querySelector('a[href="#layer2"]').classList.add('active');
