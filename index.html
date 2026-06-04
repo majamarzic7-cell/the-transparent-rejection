@@ -2505,13 +2505,36 @@
       </div>
 
       <div class="l2-field">
+        <label class="l2-label">Degree level</label>
+        <select class="l2-select" id="l2-degree-level" required>
+          <option value="" disabled selected>Select level</option>
+          <option value="Self-taught">Self-taught</option>
+          <option value="Bootcamp">Bootcamp / Certificate</option>
+          <option value="Bachelor">Bachelor's degree</option>
+          <option value="Master">Master's degree</option>
+          <option value="PhD">PhD</option>
+          <option value="None">No formal education</option>
+        </select>
+      </div>
+
+      <div class="l2-field">
         <label class="l2-label">Degree field</label>
-        <input class="l2-input" id="l2-degree" type="text" placeholder="e.g. Communication Design" required>
+        <input class="l2-input" id="l2-degree" type="text" placeholder="e.g. Communication Design">
       </div>
 
       <div class="l2-field">
         <label class="l2-label">Years of experience</label>
         <input class="l2-input" id="l2-years" type="number" min="0" max="40" placeholder="e.g. 2" required>
+      </div>
+
+      <div class="l2-field">
+        <label class="l2-label">Employment history type</label>
+        <div class="l2-radio-group">
+          <div class="l2-radio-btn" onclick="l2SelectRadio(this, 'emp-permanent')">Permanent</div>
+          <div class="l2-radio-btn" onclick="l2SelectRadio(this, 'emp-freelance')">Freelance</div>
+          <div class="l2-radio-btn" onclick="l2SelectRadio(this, 'emp-mixed')">Mixed</div>
+        </div>
+        <input type="hidden" id="l2-employment" value="Permanent">
       </div>
 
       <div class="l2-field">
@@ -2523,9 +2546,14 @@
         <input type="hidden" id="l2-gap" value="">
       </div>
 
+      <div class="l2-field full" style="margin-top:8px;">
+        <label class="l2-label">Your skills <span style="color:#444;font-weight:300;text-transform:none;letter-spacing:0;font-family:var(--sans);">— list exactly as you would write them on your CV, comma-separated</span></label>
+        <input class="l2-input" id="l2-skills" type="text" placeholder="e.g. Figma, UX Research, Prototyping, User Testing, Adobe XD">
+      </div>
+
       <div class="l2-submit-wrap">
         <button class="l2-submit" type="button" onclick="l2Submit()">See how the system reads you</button>
-        <div class="l2-submit-note">This is a simulation.<br>Not a real ATS evaluation.</div>
+        <div class="l2-submit-note">This is a simulation.<br>No data is stored or transmitted.</div>
       </div>
     </div>
   </div>
@@ -3303,151 +3331,237 @@ let currentScreen = 0;
 function l2SelectRadio(el, val) {
   el.closest('.l2-radio-group').querySelectorAll('.l2-radio-btn').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('l2-gap').value = val === 'gap-yes' ? 'Yes' : 'No';
+  if (val === 'gap-yes') document.getElementById('l2-gap').value = 'Yes';
+  else if (val === 'gap-no') document.getElementById('l2-gap').value = 'No';
+  else if (val === 'emp-permanent') document.getElementById('l2-employment').value = 'Permanent';
+  else if (val === 'emp-freelance') document.getElementById('l2-employment').value = 'Freelance';
+  else if (val === 'emp-mixed') document.getElementById('l2-employment').value = 'Mixed';
 }
 
-function l2GenerateProfile(title, level, degree, years, gap) {
-  // Smart local generation based on inputs
+// Live keyword preview removed — candidates don't get this feedback in real ATS systems
+
+
+function l2GenerateProfile(title, level, degree, degreeLevel, years, employment, gap, skills) {
   const yr = parseFloat(years) || 0;
   const hasGap = gap === 'Yes';
   const isEntry = level === 'Entry level';
   const isSenior = level === 'Senior';
+  const isFreelance = employment === 'Freelance';
+  const isMixed = employment === 'Mixed';
+  const isNonTraditional = degreeLevel === 'Self-taught' || degreeLevel === 'Bootcamp' || degreeLevel === 'None';
 
-  // Score logic: base + modifiers
-  let score = 58;
-  if (yr >= 3) score += 8;
-  if (yr >= 5) score += 6;
-  if (yr < 2) score -= 8;
-  if (hasGap) score -= 5;
-  if (isSenior && yr < 5) score -= 6;
-  if (isEntry && yr < 2) score += 4;
-  score = Math.min(82, Math.max(44, score + Math.floor(Math.random() * 8) - 3));
+  // Parse user skills
+  const userSkillsRaw = skills ? skills.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const userSkillsLower = userSkillsRaw.map(s => s.toLowerCase());
 
-  const threshold = 70 + Math.floor(Math.random() * 6);
+  // Get JD keywords from selected JD
+  const jdKeywords = (selectedJD && selectedJD.keywords) ? selectedJD.keywords : [];
 
-  // Keywords by field
-  const fieldLower = degree.toLowerCase();
-  const titleLower = title.toLowerCase();
+  // Real keyword matching — fuzzy match on substrings
+  const matchedKW = jdKeywords.filter(kw =>
+    userSkillsLower.some(us => kw.toLowerCase().includes(us) || us.includes(kw.toLowerCase()))
+  );
+  const missedKW = jdKeywords.filter(kw => !matchedKW.includes(kw));
 
-  let matchedKW = [], missedKW = [];
-
-  if (fieldLower.includes('design') || titleLower.includes('design') || titleLower.includes('ux') || titleLower.includes('ui')) {
-    matchedKW = ['Figma', 'UX Research', 'Prototyping', 'User Testing'];
-    missedKW = ['Design Systems', 'Motion Design', 'Adobe Illustrator'];
-  } else if (fieldLower.includes('market') || titleLower.includes('market')) {
-    matchedKW = ['Campaign Management', 'Content Strategy', 'Analytics'];
-    missedKW = ['SEO', 'Paid Media', 'Marketing Automation'];
-  } else if (fieldLower.includes('engineer') || titleLower.includes('engineer') || titleLower.includes('develop')) {
-    matchedKW = ['Python', 'Git', 'Agile', 'API Integration'];
-    missedKW = ['Kubernetes', 'CI/CD', 'TypeScript'];
-  } else if (fieldLower.includes('data') || titleLower.includes('data') || titleLower.includes('analyst')) {
-    matchedKW = ['Data Analysis', 'SQL', 'Excel', 'Reporting'];
-    missedKW = ['Tableau', 'Power BI', 'Machine Learning'];
-  } else if (fieldLower.includes('communication') || fieldLower.includes('media')) {
-    matchedKW = ['Content Creation', 'Storytelling', 'Brand Communication'];
-    missedKW = ['SEO Copywriting', 'Social Media Strategy', 'Adobe Suite'];
-  } else {
-    matchedKW = ['Project Management', 'Communication', 'Microsoft Office'];
-    missedKW = ['Stakeholder Management', 'Budget Planning', 'CRM Systems'];
+  // If no skills entered, fall back to heuristic
+  let usingHeuristic = false;
+  if (userSkillsRaw.length === 0) {
+    usingHeuristic = true;
+    const fieldLower = degree.toLowerCase();
+    const titleLower = title.toLowerCase();
+    if (fieldLower.includes('design') || titleLower.includes('design') || titleLower.includes('ux') || titleLower.includes('ui')) {
+      matchedKW.push('Figma', 'UX Research', 'Prototyping');
+      missedKW.push('Design Systems', 'Adobe Illustrator');
+    } else if (fieldLower.includes('market') || titleLower.includes('market')) {
+      matchedKW.push('Campaign Management', 'Content Strategy');
+      missedKW.push('SEO', 'Paid Media');
+    } else if (fieldLower.includes('data') || titleLower.includes('data') || titleLower.includes('analyst')) {
+      matchedKW.push('Data Analysis', 'SQL');
+      missedKW.push('Tableau', 'Power BI');
+    } else if (fieldLower.includes('engineer') || titleLower.includes('develop')) {
+      matchedKW.push('Python', 'Git');
+      missedKW.push('Kubernetes', 'TypeScript');
+    } else if (fieldLower.includes('communication') || fieldLower.includes('media')) {
+      matchedKW.push('Content Creation', 'Storytelling');
+      missedKW.push('SEO Copywriting', 'Social Media Strategy');
+    } else {
+      matchedKW.push('Project Management', 'Communication');
+      missedKW.push('Stakeholder Management', 'Budget Planning');
+    }
   }
 
-  // Experience threshold
+  // ── SCORING: 0–100, no artificial cap, earned from zero ──
+  // Keyword match: 0–40 points (most important signal)
+  const kwMatchRate = jdKeywords.length > 0 ? matchedKW.length / jdKeywords.length : 0.5;
+  let score = Math.round(kwMatchRate * 40);
+
+  // Experience: 0–30 points
   const requiredYears = isEntry ? 1 : isSenior ? 5 : 3;
   const expPassed = yr >= requiredYears;
-  const expGap = (requiredYears - yr).toFixed(1);
+  if (yr >= requiredYears) {
+    const overYears = Math.min(yr - requiredYears, 4);
+    score += 20 + Math.round(overYears * 2.5); // meets threshold = 20, bonus for extra years up to 10 more
+  } else {
+    score += Math.round((yr / requiredYears) * 18); // partial credit proportional to shortfall
+  }
 
-  // Classification label cold, clinical, like a real ATS tag
-  let classificationParts = [];
-  classificationParts.push(level + ' candidate');
-  if (yr < requiredYears) classificationParts.push('Experience below threshold');
+  // Education: 0–15 points
+  if (degreeLevel === 'PhD') score += 15;
+  else if (degreeLevel === 'Master') score += 13;
+  else if (degreeLevel === 'Bachelor') score += 11;
+  else if (degreeLevel === 'Bootcamp') score += 7;
+  else if (degreeLevel === 'Self-taught') score += 5;
+  else score += 0; // None
+
+  // Penalty modifiers: 0–15 points deducted
+  if (hasGap) score -= 7;
+  if (isFreelance) score -= 8;
+  if (isMixed) score -= 4;
+  if (isSenior && yr < 5) score -= 10;
+
+  // Small noise: ±2 (simulates minor inconsistencies between ATS runs, not the threshold)
+  score += Math.floor(Math.random() * 5) - 2;
+
+  // Clamp 0–100
+  score = Math.min(100, Math.max(0, score));
+
+  // Threshold fixed per JD — set by recruiter before role opens, not randomised per candidate
+  const threshold = selectedJD ? selectedJD.threshold : 65;
+  const expGap = (requiredYears - yr).toFixed(1);
+  const matchRatePct = Math.round(kwMatchRate * 100);
+
+  // Classification
+  let classificationParts = [level + ' candidate'];
+  if (!expPassed) classificationParts.push('Experience below threshold');
   if (hasGap) classificationParts.push('Employment gap flagged');
-  const matchRate = Math.round((matchedKW.length / (matchedKW.length + missedKW.length)) * 100);
-  classificationParts.push('Keyword match: ' + matchRate + '%');
+  if (isFreelance || isMixed) classificationParts.push('Non-standard employment history');
+  if (isNonTraditional) classificationParts.push('Non-traditional education pathway');
+  classificationParts.push('Keyword match: ' + matchRatePct + '%');
   const classification = classificationParts.join('. ') + '.';
 
-  // Missed items
-  const missedItems = [
-    { title: 'Freelance and independent project work', desc: 'Work listed outside formal employment fields was not counted toward total experience. The parser only recognised standard employment entries.' },
-    { title: `Skills described with different terminology`, desc: `"${matchedKW[0]}" terminology variants were not recognised as equivalent. The system matches exact strings it does not interpret meaning or synonyms.` },
-    { title: 'Portfolio and attached work samples', desc: 'PDF attachments and external portfolio links were not parsed. Any evidence of competency in non-text format was invisible to the algorithm.' },
-  ];
+  // Missed items — only include what actually applies
+  const missedItems = [];
+
+  if (isFreelance || isMixed) {
+    missedItems.push({
+      title: 'Freelance and independent project work',
+      desc: 'Work listed outside standard employment records was not counted toward total experience. The parser only recognises formal employment entries with start and end dates.'
+    });
+  }
+
+  if (missedKW.length > 0) {
+    missedItems.push({
+      title: 'Skills stated with different terminology',
+      desc: `The job description requires: ${missedKW.slice(0,3).join(', ')}. These were not found in your stated skills — either missing or described differently. The system matches exact strings and does not interpret synonyms.`
+    });
+  }
+
+  missedItems.push({
+    title: 'Portfolio and attached work samples',
+    desc: 'PDF attachments and external portfolio links were not parsed. Any evidence of competency in non-text format was invisible to the algorithm.'
+  });
+
+  if (isNonTraditional) {
+    missedItems.push({
+      title: 'Non-traditional education pathway',
+      desc: `${degreeLevel} was detected as a non-standard qualification. The system weighted this lower than a formal degree even when skills are equivalent.`
+    });
+  }
 
   if (hasGap) {
-    missedItems.push({ title: 'Context behind career gap', desc: 'Career gaps are flagged automatically. The reason retraining, caregiving, health, freelance is not evaluated.' });
+    missedItems.push({
+      title: 'Context behind career gap',
+      desc: 'Career gaps are flagged automatically. The reason — retraining, caregiving, health, freelance — is not evaluated. The flag is applied regardless of context.'
+    });
   }
 
   // Contestable items
   const contestable = [];
   if (!expPassed) {
-    contestable.push({ title: 'Experience threshold applied as a rigid rule', desc: `${expGap} years below threshold. Applied automatically, no human judgment about quality or relevance of experience.` });
+    contestable.push({ title: 'Experience threshold applied as a rigid rule', desc: `${expGap} years below the required threshold of ${requiredYears}. Applied automatically with no human judgment about the quality or relevance of experience.` });
   }
   if (hasGap) {
     contestable.push({ title: 'Career gap penalised without context', desc: 'Gap flagged and scored negatively. The reason behind the gap was not evaluated.' });
   }
-  contestable.push({ title: 'Relevant experience not recognised by the parser', desc: 'Independent or freelance work not counted. This is a parsing limitation, not a qualification gap.' });
-  contestable.push({ title: 'Score generated under low system confidence', desc: 'Profile & Identity category flagged as low confidence. A decision partially based on uncertain output is a candidate for human review.' });
+  if (isFreelance || isMixed) {
+    contestable.push({ title: 'Freelance experience not recognised as equivalent', desc: 'Employment history classified as non-standard. Freelance work performing the same functions as permanent employment was scored differently.' });
+  }
+  if (isNonTraditional) {
+    contestable.push({ title: 'Non-traditional education pathway penalised', desc: `${degreeLevel} qualification flagged as lower confidence. Skills and competencies were not evaluated independently of credential type.` });
+  }
+  if (missedKW.length > 0) {
+    contestable.push({ title: 'Relevant skills not recognised due to terminology mismatch', desc: `Skills you listed may be equivalent to required keywords but were not matched. The system cannot evaluate synonyms or contextual meaning.` });
+  }
   contestable.push({ title: 'Decision made solely by automated processing', desc: 'No human reviewed this application. Under GDPR Art. 22, you have the right to request intervention on this basis alone.' });
 
   return {
-    score,
-    threshold,
-    classification,
+    score, threshold, classification,
     keywords: {
       matched: matchedKW,
       missed: missedKW,
-      confidence: yr >= 3 ? 'Medium' : 'Low',
-      desc: 'Kortex extracted terms from your CV and compared them against the exact keywords listed in the job description. Synonyms and related terms were not recognised.',
-      wtm: 'The system compares exact words. A skill described differently than the job listing even if it refers to the same competency receives no credit.'
+      confidence: kwMatchRate > 0.6 ? 'High' : kwMatchRate > 0.3 ? 'Medium' : 'Low',
+      desc: userSkillsRaw.length > 0
+        ? `Kortex compared your stated skills (${userSkillsRaw.slice(0,4).join(', ')}${userSkillsRaw.length > 4 ? '...' : ''}) against the exact keywords in the job description. ${matchedKW.length} of ${jdKeywords.length} required terms were found.`
+        : 'Kortex extracted terms from your CV and compared them against the exact keywords in the job description. Synonyms and related terms were not recognised.',
+      wtm: missedKW.length > 0
+        ? `${missedKW.slice(0,3).join(', ')} — required by the job description but not found in your stated skills. The system does not recognise equivalent terms or infer competency from context.`
+        : 'All required keywords were matched. Score in this category reflects full keyword alignment.'
     },
     experience: {
-      found: `${yr} year${yr !== 1 ? 's' : ''} of relevant experience`,
-      issue: expPassed ? `Meets required threshold of ${requiredYears} years` : `Required threshold: ${requiredYears} years minimum. Shortfall: ${expGap} years.`,
+      found: `${yr} year${yr !== 1 ? 's' : ''} declared`,
+      issue: expPassed ? `Meets required threshold of ${requiredYears} years` : `Required: ${requiredYears} years. Declared: ${yr}. Shortfall: ${expGap} years.`,
       confidence: 'High',
-      desc: 'Kortex calculated total years of relevant experience and applied a fixed minimum threshold. The calculation does not account for the nature or depth of experience.',
-      rigid_rule: expPassed ? null : `The system applied a fixed ${requiredYears}-year threshold with no tolerance. ${yr} years does not satisfy "at least ${requiredYears} years" regardless of the quality or relevance of that experience.`,
-      wtm: expPassed ? 'Your experience met the required threshold.' : `This is the category where a rigid algorithmic rule produced a result that may not reflect your actual qualifications.`,
-      freelance_invisible: true
+      desc: 'Kortex applied a fixed minimum experience threshold. The calculation does not account for the nature, depth, or relevance of experience — only the number declared.',
+      rigid_rule: expPassed ? null : `A fixed ${requiredYears}-year threshold was applied with no tolerance. ${yr} year${yr !== 1 ? 's' : ''} does not satisfy "at least ${requiredYears}" regardless of what was accomplished in that time.`,
+      wtm: expPassed ? 'Your declared experience met the required threshold.' : 'This is where a rigid rule produced a result that may not reflect your actual qualifications.'
     },
     education: {
-      match: fieldLower.length > 2 ? 'Partial match' : 'No match',
-      not_evaluated: ['Thesis topic and academic projects', 'Relevant coursework', 'Academic awards or distinctions'],
-      confidence: 'High',
-      desc: 'Kortex evaluated degree field and level against the job description requirements.',
-      wtm: 'Content beyond the degree title coursework, thesis, academic projects was not evaluated.'
+      match: degreeLevel === 'None' ? 'No degree detected' : isNonTraditional ? 'Non-standard qualification — lower weight applied' : 'Partial match',
+      not_evaluated: ['Thesis topic and academic projects', 'Relevant coursework and specialisations', 'Self-directed learning and certifications'],
+      confidence: isNonTraditional ? 'Low' : 'High',
+      desc: `Kortex evaluated degree level (${degreeLevel || 'not specified'}) and field against job requirements. Non-traditional pathways are weighted lower regardless of demonstrated competency.`,
+      wtm: isNonTraditional
+        ? `${degreeLevel} was flagged as non-standard. The system cannot evaluate what you know — only what credential you hold.`
+        : 'Content beyond the degree title — coursework, thesis, academic projects — was not evaluated.'
     },
     profile: {
       matched: ['Collaborative', 'Results-oriented'],
-      missed: ['Proactive (different phrasing used)', 'Strategic thinker (not in CV text)', 'Fast-paced environment (implied, not stated)'],
+      missed: ['Proactive (different phrasing)', 'Strategic thinker (not in stated text)', 'Fast-paced environment (implied, not stated)'],
       confidence: 'Low',
       desc: 'Kortex scanned for soft skill descriptors and personality language. This is the category with the lowest system confidence.',
-      note: 'This category is where the system is least reliable. Soft skills and contextual language are poorly suited to keyword matching. The score here reflects linguistic proximity, not actual fit.',
+      note: 'Soft skills and contextual language are poorly suited to keyword matching. The score here reflects linguistic proximity, not actual fit.',
       wtm: 'The gap between what you wrote and what was required may be a difference in language, not in who you are.'
     },
     missed_items: missedItems,
-    contestable_items: contestable
+    contestable_items: contestable,
+    userTitle: title, userLevel: level, userDegree: degree, userDegreeLevel: degreeLevel,
+    userYears: years, userEmployment: employment, userGap: gap, userSkills: userSkillsRaw
   };
 }
 
 function l2Submit() {
-
   const title = document.getElementById('l2-title').value.trim();
   const level = document.getElementById('l2-level').value;
+  const degreeLevel = document.getElementById('l2-degree-level').value || 'Bachelor';
   const degree = document.getElementById('l2-degree').value.trim();
   const years = document.getElementById('l2-years').value;
+  const employment = document.getElementById('l2-employment').value || 'Permanent';
   const gap = document.getElementById('l2-gap').value || 'No';
+  const skills = document.getElementById('l2-skills').value.trim();
 
-  // Hide form, show loading
   document.getElementById('input-form').style.display = 'none';
   document.getElementById('l2-loading').style.display = 'block';
 
-  // Simulate processing time
   setTimeout(() => {
-    const data = l2GenerateProfile(title, level, degree, years, gap);
+    const data = l2GenerateProfile(title, level, degree, degreeLevel, years, employment, gap, skills);
     data.userTitle = title;
     data.userLevel = level;
     data.userDegree = degree;
+    data.userDegreeLevel = degreeLevel;
     data.userYears = years;
+    data.userEmployment = employment;
     data.userGap = gap;
+    data.userSkills = skills.split(',').map(s => s.trim()).filter(Boolean);
     portalData = data;
 
     document.getElementById('l2-loading').style.display = 'none';
@@ -3682,12 +3796,12 @@ window.addEventListener('scroll', function() {
 
 // ─── Job Description Selection ───
 var JD_DATA = [
-  {title:'Junior Product Designer',level:'Entry level',years:2},
-  {title:'Marketing Manager',level:'Mid level',years:3},
-  {title:'Data Analyst',level:'Mid level',years:3},
-  {title:'Frontend Developer',level:'Mid level',years:3},
-  {title:'Communications Officer',level:'Entry level',years:2},
-  {title:'Project Manager',level:'Senior',years:5}
+  {title:'Junior Product Designer',level:'Entry level',years:2,threshold:60,keywords:['Figma','UX Research','Prototyping','Design Systems','User Testing','Wireframing','Adobe XD','Accessibility']},
+  {title:'Marketing Manager',level:'Mid level',years:3,threshold:65,keywords:['Campaign Management','Google Analytics','SEO','Paid Media','HubSpot','A/B Testing','Content Strategy','Email Marketing']},
+  {title:'Data Analyst',level:'Mid level',years:3,threshold:68,keywords:['SQL','Python','Tableau','Excel','Power BI','Data Visualisation','Statistical Analysis','Reporting']},
+  {title:'Frontend Developer',level:'Mid level',years:3,threshold:70,keywords:['JavaScript','React','TypeScript','Git','CSS','REST APIs','Agile','Unit Testing']},
+  {title:'Communications Officer',level:'Entry level',years:2,threshold:58,keywords:['Content Creation','Copywriting','Social Media Strategy','Press Releases','Adobe InDesign','Storytelling','Media Relations','WordPress']},
+  {title:'Project Manager',level:'Senior',years:5,threshold:75,keywords:['Project Management','Stakeholder Management','Budget Planning','Risk Assessment','Agile','Process Improvement','KPI Reporting','Change Management']}
 ];
 var selectedJD = null;
 
