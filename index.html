@@ -398,7 +398,7 @@
     </div>
 
     <!-- Interactive keyword matching explainer -->
-    <div class="s11-interactive" style="max-width:780px;">
+    <div class="s11-interactive" style="max-width:780px;margin:48px auto 0;">
       <style>
         /* Section 1.1 interactive aligned with site design system */
         .s11-interactive {
@@ -484,15 +484,14 @@
         }
 
         .s11-interactive .score-block {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
+          display: none;
+          grid-template-columns: max-content;
           gap: 24px;
           margin-top: 32px;
-          opacity: 0;
-          transition: opacity 0.6s ease;
         }
 
-        .s11-interactive .score-block.visible { opacity: 1; }
+        .s11-interactive .score-block.visible { display: grid; }
+        .s11-interactive .finding-bar:empty { display: none; }
 
         .s11-interactive .score-main {
           padding: 24px;
@@ -637,10 +636,6 @@
       </div>
 
       <div class="score-block" id="s11-score-block">
-        <div class="score-main">
-          <div class="score-number">65<span style="font-size: 28px;opacity:0.35;font-weight:400">/100</span></div>
-          <div class="score-sub">similarity score generated in milliseconds</div>
-        </div>
         <div class="legend" id="s11-legend">
           <div class="legend-item"><div class="legend-dot" style="background:#E8F7F1;border:1px solid #1D9E75"></div>keyword match</div>
           <div class="legend-item"><div class="legend-dot" style="background:#FDF0DC;border:1px solid #BA7517"></div>no match found</div>
@@ -660,10 +655,6 @@
       </div>
 
       <div class="finding-bar"></div>
-
-      <div class="s11-footnote">
-        "Traditional Applicant Tracking Systems depend heavily on keyword-based filtering, they often overlook contextually relevant candidates." Hepzibah et al., <em>Journal of Theoretical and Applied Information Technology</em>, 2025
-      </div>
     </div>
 
   </div>
@@ -1105,7 +1096,7 @@
         .atl-sort b{color:#111;font-weight:600;margin-right:16px;}
         .atl-sort button{background:none;border:none;color:#888;font-size:13px;font-weight:700;letter-spacing:.04em;cursor:pointer;padding:4px 2px;margin-right:18px;font-family:inherit;}
         .atl-sort button.on{color:#5b8cff;}
-        .atl-legend{position:absolute;left:24px;bottom:64px;z-index:30;font-family:var(--sans);font-size:11.5px;color:#555;}
+        .atl-legend{position:absolute;right:40px;bottom:36px;z-index:30;font-family:var(--sans);font-size:11.5px;color:#555;}
         .atl-legend .r{display:flex;align-items:center;gap:7px;margin-bottom:4px;}
         .atl-legend .sw{width:11px;height:11px;border-radius:2px;}
         .atl-legend .rg{width:11px;height:11px;border-radius:2px;background:#ccc;box-shadow:0 0 0 1.5px #111;}
@@ -3265,11 +3256,11 @@ function s12CloseModal(e) {
 (function() {
   let s11Step = 0;
   const s11Steps = 4;
-  const s11CvMatch = ['s11w2','s11w3','s11w14','s11w21'];
-  const s11CvNoMatch = ['s11w16','s11w17','s11w18','s11w19'];
-  const s11CvFade = ['s11w1','s11w4','s11w5','s11w6','s11w7','s11w8','s11w9','s11w10','s11w11','s11w12','s11w13','s11w15','s11w20','s11w22'];
-  const s11JdKey = ['s11j5','s11j6','s11j7','s11j8','s11j12','s11j14'];
-  const s11JdFade = ['s11j1','s11j2','s11j3','s11j4','s11j9','s11j10','s11j11','s11j13','s11j15'];
+  const s11CvMatch = ['s11w2','s11w14','s11w21'];
+  const s11CvNoMatch = ['s11w16','s11w17','s11w18','s11w19','s11w8','s11w9','s11w10','s11w11'];
+  const s11CvFade = ['s11w1','s11w3','s11w4','s11w5','s11w6','s11w7','s11w12','s11w13','s11w15','s11w20','s11w22'];
+  const s11JdKey = ['s11j5','s11j6','s11j7','s11j8','s11j10','s11j11','s11j12','s11j14','s11j15'];
+  const s11JdFade = ['s11j1','s11j2','s11j3','s11j4','s11j9','s11j13'];
   const s11Descs = [
     'See how the algorithm scans a CV and turns words into a score.',
     'The system extracts keywords specific words it can match against a job description. Everything else becomes invisible.',
@@ -4074,7 +4065,7 @@ function proceedToForm() {
           axY.style.left=(PL-78)+'px'; axY.style.top=(PT+PH/2)+'px';
           axY.style.transform='rotate(-90deg)'; axY.style.transformOrigin='left center';
           corner.style.left=(PL+cw*2)+'px'; corner.style.top=PT+'px'; corner.style.width=cw+'px'; corner.style.height=ch+'px';
-          cl.style.left=(PL+cw*2+cw/2-80)+'px'; cl.style.top=(PT+8)+'px';
+          cl.style.left=(PL+cw*2+cw/2-80)+'px'; cl.style.top=(PT-44)+'px';
           var tkT={1:'none',2:'types only',3:'specifics'},tkF={1:'zero agency',2:'edit only',3:'can contest'};
           var ticks=[];
           [1,2,3].forEach(function(t){var e=document.createElement('div');e.className='atl-tick';e.textContent=tkT[t];e.style.left=cxf(t)+'px';e.style.top=(PT+PH+12)+'px';stage.appendChild(e);ticks.push(e);});
