@@ -35,7 +35,7 @@
     font-weight: 300;
     background: var(--bg-light);
     color: var(--text-dark);
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   /* ─── Navigation ─── */
@@ -202,7 +202,7 @@
   <div class="nav-title" onclick="showPage('home')" style="cursor:pointer">The Transparent Rejection</div>
   <ul class="nav-links">
     <li><a href="javascript:void(0)" onclick="showPage('research');return false;" data-page="research">Research</a></li>
-    <li><a href="javascript:void(0)" onclick="showPage('prototype');return false;" data-page="prototype">Prototype</a></li>
+    <li><a href="javascript:void(0)" onclick="showPage('prototype');return false;" data-page="prototype">Simulation</a></li>
     <li><a href="javascript:void(0)" onclick="showPage('about');return false;" data-page="about">About</a></li>
   </ul>
 </nav>
@@ -674,6 +674,15 @@
         align-items: start;
       }
 
+      .s12-sticky {
+        position: sticky;
+        top: 52px;
+        z-index: 20;
+        background: var(--bg-light);
+        padding: 12px 0 8px;
+        border-bottom: 1px solid var(--border-light);
+        margin-bottom: 16px;
+      }
       .s12-filters {
         display: flex;
         flex-wrap: wrap;
@@ -865,6 +874,7 @@
       </div>
     </div>
 
+    <div class="s12-sticky">
     <div class="s12-filters">
       <span class="s12-filter-label">Filter</span>
       <button class="s12-filter-btn active" data-theme="all" onclick="s12Filter('all', this)">All 100</button>
@@ -876,6 +886,7 @@
     </div>
 
     <div class="s12-count-bar" id="s12-count-bar">Showing all <span>100</span> comments</div>
+    </div>
 
     <div class="s12-grid" id="s12-grid"></div>
 
@@ -1318,12 +1329,12 @@
 
       <div class="s14-law">
         <div class="s14-law-meta">
-          <span class="s14-law-name">EU AI Act · Article 14</span>
-          <span class="s14-law-status">In force since 2024</span>
-          <a href="https://artificialintelligenceact.eu/article/14/" target="_blank" style="font-family:var(--sans);font-size:11px;color:#888;text-decoration:none;border-bottom:1px solid #ddd;padding-bottom:1px;margin-left:auto;">Read the article ↗</a>
+          <span class="s14-law-name">EU AI Act · Article 86</span>
+          <span class="s14-law-status">Phasing in</span>
+          <a href="https://artificialintelligenceact.eu/article/86/" target="_blank" style="font-family:var(--sans);font-size:11px;color:#888;text-decoration:none;border-bottom:1px solid #ddd;padding-bottom:1px;margin-left:auto;">Read the article ↗</a>
         </div>
-        <div class="s14-law-title">High-risk AI systems must be designed to allow human oversight</div>
-        <div class="s14-law-text">High-risk AI systems must be designed to allow human oversight. Recruitment AI is classified as high-risk.</div>
+        <div class="s14-law-title">The right to an explanation of an individual automated decision</div>
+        <div class="s14-law-text">Where a high-risk AI system contributes to a decision that significantly affects you, you have the right to obtain a clear and meaningful explanation of the role it played and the main elements of the decision. Recruitment AI is classified as high-risk under Annex III.</div>
       </div>
     </div>
 
@@ -1382,7 +1393,7 @@
   </style>
 
   <div class="transition-statement">Here is what a transparent rejection could look like.</div>
-  <a href="javascript:void(0)" onclick="showPage('prototype');return false;" class="transition-arrow">See the prototype <span>→</span></a>
+  <a href="javascript:void(0)" onclick="showPage('prototype');return false;" class="transition-arrow">Go to the simulation <span>→</span></a>
 
 </section>
 
@@ -2698,7 +2709,7 @@
             <div class="s01-pathway-num">03</div>
             <div>
               <div class="s01-pathway-title">Challenge this decision</div>
-              <div class="s01-pathway-desc">Under GDPR Art. 22 and EU AI Act Art. 14, you have the right to request human review.</div>
+              <div class="s01-pathway-desc">Under GDPR Art. 22 and EU AI Act Art. 86, you have the right to request human review.</div>
             </div>
             <div class="s01-pathway-arrow">→</div>
           </div>
@@ -2911,7 +2922,7 @@
         <div class="s03-section">
           <div class="s03-section-label">Section 03</div>
           <div class="s03-section-title">What you have the right to contest</div>
-          <div class="s03-contest-note">Items below are contestable under GDPR Art. 22 or EU AI Act Art. 14. Adding an item initiates a human review it does not guarantee a different outcome.</div>
+          <div class="s03-contest-note">Items below are contestable under GDPR Art. 22 or EU AI Act Art. 86. Adding an item initiates a human review it does not guarantee a different outcome.</div>
           <div class="s03-contestable-list" id="s03-contestable-list"></div>
         </div>
       </div>
@@ -2935,7 +2946,7 @@
           <div class="s04-rights">
             <div class="s04-rights-label">Your legal basis</div>
             <div class="s04-rights-text">
-              Under <strong>GDPR Article 22</strong>, you have the right not to be subject to a decision based solely on automated processing including the right to obtain human intervention, to express your point of view, and to contest the decision. Under <strong>EU AI Act Article 14</strong>, recruitment AI is classified as high-risk and must be designed to allow human oversight.
+              Under <strong>GDPR Article 22</strong>, you have the right not to be subject to a decision based solely on automated processing including the right to obtain human intervention, to express your point of view, and to contest the decision. Under <strong>EU AI Act Article 86</strong>, where a high-risk AI system contributes to a decision that affects you, you have the right to a clear and meaningful explanation of the role it played and the main elements of the decision.
             </div>
           </div>
 
@@ -3330,6 +3341,7 @@ let s13OpenDetail = null;
 function s13Build() {
   const container = document.getElementById('s13-categories');
   if (!container) return;
+  container.innerHTML = '';
 
   s13Categories.forEach(cat => {
     const items = s13Platforms.filter(p => p.type === cat.key);
@@ -3349,7 +3361,6 @@ function s13Build() {
       </div>
       <div class="s13-cat-right">
         <div class="s13-cat-example">${cat.description}</div>
-        <div class="s13-cat-verdict">${cat.verdict}</div>
         <div class="s13-tags">${tagsHtml}</div>
       </div>`;
 
